@@ -63,13 +63,6 @@ public class BMSFileSystem : MonoBehaviour
             do
             {
                 string line = reader.ReadLine();
-
-                // 헤더 필드가 아닐 때는 다음 파일로 이동
-                if ((line.StartsWith("*----------------------") && line != "*---------------------- HEADER FIELD"))
-                {
-                    break;
-                }
-
                 string headerKey = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(0, line.IndexOf(" ")) : line;
                 string headerValue = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(" ") + 1) : "";
 
@@ -139,7 +132,7 @@ public class BMSFileSystem : MonoBehaviour
                             break;
                         // 일부 파일에서 #TOTAL 430.026 처럼 "."으로 구분되어 있는데 콤마로 구분인건지 float형인지 모르겠다..
                         case "#TOTAL":
-                            Int32.TryParse(headerValue, out trackInfo.total);
+                            Single.TryParse(headerValue, out trackInfo.total);
                             break;
                         case "#STAGEFILE":
                             trackInfo.stageFile = Path.Combine(path, headerValue);
