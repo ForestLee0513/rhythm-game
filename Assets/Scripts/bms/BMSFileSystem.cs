@@ -31,26 +31,20 @@ public class BMSFileSystem : MonoBehaviour
             .EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
             .Where(s => extensions.Contains(Path.GetExtension(s).TrimStart(".").ToLowerInvariant()));
 
-        foreach(string bmsFilePath in bmsFilePaths)
+        foreach (string bmsFilePath in bmsFilePaths)
         {
-            ParseHeader(bmsFilePath);
-        }
-
-        // 파싱 테스트용
-        foreach(TrackInfo trackInfo in trackInfoList)
-        {
-            Debug.Log("곡명: " + trackInfo.title + " / 작곡가: " + trackInfo.artist + " / 난이도: " + trackInfo.playLevel);
+            ParseSongInfoHeader(bmsFilePath);
         }
     }
 
-    private void ParseHeader(string path)
+    private void ParseSongInfoHeader(string path)
     {
         TrackInfo trackInfo = new TrackInfo();
 
         trackInfo.path = path;
         using (var reader = new StreamReader(path))
         {
-            while(!reader.EndOfStream)
+            do
             {
                 string line = reader.ReadLine();
 
@@ -69,7 +63,7 @@ public class BMSFileSystem : MonoBehaviour
                 string headerKey = line.Substring(0, line.IndexOf(' '));
                 string headerValue = line.Substring(line.IndexOf(" ") + 1);
 
-                switch(headerKey)
+                switch (headerKey)
                 {
                     case "#PLAYER":
                         Int32.TryParse(headerValue, out trackInfo.playerType);
@@ -101,8 +95,11 @@ public class BMSFileSystem : MonoBehaviour
                     case "#STAGEFILE":
                         trackInfo.stageFile = Path.Combine(path, headerValue);
                         break;
+                    default:
+                        // 키 사운드, BGA 프레임 등 노래 정보와 상관없는 헤더 정보일 때는 다음 파일로 생략
+                        continue;
                 }
-            }
+            } while (!reader.EndOfStream);
 
             trackInfoList.Add(trackInfo);
         }
