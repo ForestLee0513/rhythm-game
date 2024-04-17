@@ -7,7 +7,7 @@
     public string path = "";
     public string stageFile = "";
     public int playerType = 0;
-    public int bpm = 0;
+    public float bpm = 0;
     public int playLevel = 0;
     public int difficulty = 0;
     public int rank = 0;
