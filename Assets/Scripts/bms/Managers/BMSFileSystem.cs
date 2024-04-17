@@ -42,9 +42,10 @@ public class BMSFileSystem : MonoBehaviour
             ParseSongInfoHeader(bmsFilePath);
         }
 
+        // 디버깅용 콘솔출력
         foreach (TrackInfo trackInfo in trackInfoList)
         {
-            Debug.Log(trackInfo.title + " / " + trackInfo.artist + " / " + trackInfo.genre);
+            Debug.Log($"제목: {trackInfo.title}\n작곡가: {trackInfo.artist}\n장르: {trackInfo.genre}\n경로:{trackInfo.path}\n썸네일: {trackInfo.stageFile}\nPlayerType: {trackInfo.playerType}\nBPM: {trackInfo.bpm}\n난이도: {trackInfo.playLevel}\nRANK: {trackInfo.rank}\nTOTAL: {trackInfo.total}");
         }
     }
 
@@ -52,7 +53,8 @@ public class BMSFileSystem : MonoBehaviour
     {
         TrackInfo trackInfo = new TrackInfo();
         bool isRandom = false;
-        bool CheckIfStatement = false;
+        bool isIfStatementTrue = false;
+        bool isCheckIfstatementStarted = false;
         int randomResult = 0;
 
         trackInfo.path = path;
@@ -73,7 +75,7 @@ public class BMSFileSystem : MonoBehaviour
 
                 // Random에 대한 전처리 (#RANDOM 숫자 / #ENDRANDOM으로 구분) //
                 // 랜덤 값 지정
-                if (headerKey == "#RANDOM" && isRandom == false)
+                if (headerKey == "#RANDOM")
                 {
                     isRandom = true;
                     Int32.TryParse(headerValue, out int randomNumber);
@@ -81,7 +83,7 @@ public class BMSFileSystem : MonoBehaviour
                 }
 
                 // 랜덤 탈출
-                if (headerKey == "#ENDRANDOM" && isRandom == true)
+                if (headerKey == "#ENDRANDOM")
                 {
                     isRandom = false;
                     randomResult = 0;
@@ -91,67 +93,62 @@ public class BMSFileSystem : MonoBehaviour
                 // 조건 검색
                 if (headerKey == "#IF" && Int32.TryParse(headerValue, out int parsedHeaderValueNumber) && isRandom == true)
                 {
+                    isCheckIfstatementStarted = true;
                     if (parsedHeaderValueNumber == randomResult)
                     {
-                        CheckIfStatement = true;
+                        isIfStatementTrue = true;
                     }
                     else
                     {
-                        CheckIfStatement = false;
+                        isIfStatementTrue = false;
                     }
                 }
 
                 // 조건 탈출
                 if(headerKey == "#ENDIF")
                 {
-                    CheckIfStatement = false;
+                    isCheckIfstatementStarted = false;
+                    isIfStatementTrue = false;
                 }
 
-                // Start 랜덤 여부가 false일 때 실행되는 기본 처리 //
-                if (isRandom == false || CheckIfStatement == true)
+                // 트랙 정보 지정
+                if (isRandom == false || (isIfStatementTrue == true && isCheckIfstatementStarted == true) || isCheckIfstatementStarted == false)
                 {
-                    SetTrackInfoValue(headerKey, headerValue, trackInfo, path);
+                    switch (headerKey)
+                    {
+                        case "#PLAYER":
+                            Int32.TryParse(headerValue, out trackInfo.playerType);
+                            break;
+                        case "#GENRE":
+                            trackInfo.genre = headerValue;
+                            break;
+                        case "#TITLE":
+                            trackInfo.title = headerValue;
+                            break;
+                        case "#ARTIST":
+                            trackInfo.artist = headerValue;
+                            break;
+                        case "#BPM":
+                            float.TryParse(headerValue, out trackInfo.bpm);
+                            break;
+                        case "#PLAYLEVEL":
+                            Int32.TryParse(headerValue, out trackInfo.playLevel);
+                            break;
+                        case "#RANK":
+                            Int32.TryParse(headerValue, out trackInfo.rank);
+                            break;
+                        // 일부 파일에서 #TOTAL 430.026 처럼 "."으로 구분되어 있는데 콤마로 구분인건지 float형인지 모르겠다..
+                        case "#TOTAL":
+                            Int32.TryParse(headerValue, out trackInfo.total);
+                            break;
+                        case "#STAGEFILE":
+                            trackInfo.stageFile = Path.Combine(path, headerValue);
+                            break;
+                    }
                 }
             } while (!reader.EndOfStream);
 
             trackInfoList.Add(trackInfo);
-        }
-    }
-
-    private void SetTrackInfoValue(string headerKey, string headerValue, TrackInfo trackInfo, string path)
-    {
-        switch (headerKey)
-        {
-            case "#PLAYER":
-                Int32.TryParse(headerValue, out trackInfo.playerType);
-                break;
-            case "#GENRE":
-                trackInfo.genre = headerValue;
-                break;
-            case "#TITLE":
-                trackInfo.title = headerValue;
-                break;
-            case "#ARTIST":
-                trackInfo.artist = headerValue;
-                break;
-            case "#BPM":
-                float.TryParse(headerValue, out trackInfo.bpm);
-                break;
-            case "#PLAYLEVEL":
-                Int32.TryParse(headerValue, out trackInfo.playLevel);
-                break;
-            case "#DIFFICULTY":
-                Int32.TryParse(headerValue, out trackInfo.difficulty);
-                break;
-            case "#RANK":
-                Int32.TryParse(headerValue, out trackInfo.rank);
-                break;
-            case "#TOTAL":
-                Int32.TryParse(headerValue, out trackInfo.total);
-                break;
-            case "#STAGEFILE":
-                trackInfo.stageFile = Path.Combine(path, headerValue);
-                break;
         }
     }
 }
