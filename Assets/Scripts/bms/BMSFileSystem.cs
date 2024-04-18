@@ -11,7 +11,8 @@ using UnityEngine;
 public class BMSFileSystem : MonoBehaviour
 {
     private string rootPath;
-    private List<TrackInfo> trackInfoList = new List<TrackInfo>();
+    private static List<TrackInfo> trackInfoList = new List<TrackInfo>();
+    public static List<TrackInfo> TrackInfoList { get { return trackInfoList; } }
 
     private void Awake()
     {
@@ -40,12 +41,6 @@ public class BMSFileSystem : MonoBehaviour
         foreach (string bmsFilePath in bmsFilePaths)
         {
             ParseSongInfoHeader(bmsFilePath);
-        }
-
-        // 디버깅용 콘솔출력
-        foreach (TrackInfo trackInfo in trackInfoList)
-        {
-            Debug.Log($"제목: {trackInfo.title}\n작곡가: {trackInfo.artist}\n장르: {trackInfo.genre}\n경로:{trackInfo.path}\n썸네일: {trackInfo.stageFile}\nPlayerType: {trackInfo.playerType}\nBPM: {trackInfo.bpm}\n난이도: {trackInfo.playLevel}\nRANK: {trackInfo.rank}\nTOTAL: {trackInfo.total}");
         }
     }
 
@@ -98,7 +93,7 @@ public class BMSFileSystem : MonoBehaviour
                 }
 
                 // 조건 탈출
-                if(headerKey == "#ENDIF")
+                if (headerKey == "#ENDIF")
                 {
                     isCheckIfstatementStarted = false;
                     isIfStatementTrue = false;
@@ -130,7 +125,6 @@ public class BMSFileSystem : MonoBehaviour
                         case "#RANK":
                             Int32.TryParse(headerValue, out trackInfo.rank);
                             break;
-                        // 일부 파일에서 #TOTAL 430.026 처럼 "."으로 구분되어 있는데 콤마로 구분인건지 float형인지 모르겠다..
                         case "#TOTAL":
                             Single.TryParse(headerValue, out trackInfo.total);
                             break;
@@ -138,6 +132,14 @@ public class BMSFileSystem : MonoBehaviour
                             trackInfo.stageFile = Path.Combine(path, headerValue);
                             break;
                     }
+
+                    // 파일 정보 관련 파싱 //
+                    // 오디오
+                    if (headerKey.StartsWith("#WAV"))
+                    {
+                        trackInfo.audioFileNames.Add(headerKey, Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                    }
+                    // BGA
                 }
             } while (!reader.EndOfStream);
 
