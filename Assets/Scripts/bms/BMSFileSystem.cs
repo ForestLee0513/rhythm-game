@@ -67,7 +67,7 @@ public class BMSFileSystem : MonoBehaviour
                 {
                     isRandom = true;
                     Int32.TryParse(headerValue, out int randomNumber);
-                    randomResult = UnityEngine.Random.Range(1, randomNumber + 1);
+                    randomResult = new System.Random().Next(1, randomNumber + 1);
                 }
 
                 // 랜덤 탈출
@@ -137,9 +137,13 @@ public class BMSFileSystem : MonoBehaviour
                     // 오디오
                     if (headerKey.StartsWith("#WAV"))
                     {
-                        trackInfo.audioFileNames.Add(headerKey, Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                        trackInfo.audioFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
                     }
-                    // BGA
+                    // BGA 이미지 (mp4도 있을수도 있음.)
+                    if (headerKey.StartsWith("BMP"))
+                    {
+                        trackInfo.imageFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                    }
                 }
             } while (!reader.EndOfStream);
 
