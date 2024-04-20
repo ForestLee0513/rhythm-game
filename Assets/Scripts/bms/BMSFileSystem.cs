@@ -1,47 +1,53 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.Mathematics;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
-public class BMSFileSystem : MonoBehaviour
-{
-    private string rootPath;
-    private static List<TrackInfo> trackInfoList = new List<TrackInfo>();
-    public static List<TrackInfo> TrackInfoList { get { return trackInfoList; } }
+// BMS의 파일을 관리하는 클래스입니다.
+// 유니티의 MonoBehaviour에 의존하지 않으며 대상 폴더 지정과 파일을 불러와서 헤더 정보를 딕셔너리 형태로 저장하는 역할만 합니다.
 
-    private void Awake()
+public class BMSFileSystem
+{
+    private Dictionary<string, TrackInfo> trackInfoList = new Dictionary<string, TrackInfo>();
+    private List<string> rootPaths = new List<string>();
+
+    public BMSFileSystem()
     {
-        ImportFiles();
+        // 지금은 카운터 없으면 임의로 지정하지만 json으로 rootPath를 저장할 수 있게 된다면 에러 반환 예정.
+        if (rootPaths.Count <= 0)
+        {
+            rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
+        }
+    }
+    
+    public List<string> GetRootPaths()
+    {
+        return rootPaths;
     }
 
-    private void ImportFiles()
+    // 이 과정에서 여기에 json 저장 예정.
+    public void AddRootPaths(string path)
     {
-        // path 없을 때 새로운 path 지정
-        // 추후 배열로 대응 예정
-        if (rootPath == "" || rootPath == null)
-        {
-#if UNITY_EDITOR
-            rootPath = @"c:\bmsFiles";
-#elif UNITY_STANDALONE
-            rootPath = @$"{Application.dataPath}/bmsFiles";
-#endif
-        }
+        rootPaths.Add(path);
+    }
 
+    public Dictionary<string, TrackInfo> ImportFiles(int index)
+    {
         // load all bms files..
         List<string> extensions = new List<string> { "bms", "bme", "bml", "pms" };
+        
         IEnumerable<string> bmsFilePaths = Directory
-            .EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
+            .EnumerateFiles(rootPaths[index], "*.*", SearchOption.AllDirectories)
             .Where(s => extensions.Contains(Path.GetExtension(s).TrimStart(".").ToLowerInvariant()));
 
         foreach (string bmsFilePath in bmsFilePaths)
         {
             ParseSongInfoHeader(bmsFilePath);
         }
+
+        return trackInfoList;
     }
 
     private void ParseSongInfoHeader(string path)
@@ -147,7 +153,7 @@ public class BMSFileSystem : MonoBehaviour
                 }
             } while (!reader.EndOfStream);
 
-            trackInfoList.Add(trackInfo);
+            trackInfoList.Add(Directory.GetParent(path).Name, trackInfo);
         }
     }
 }
