@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
     public BMSFileSystem bmsFileSystem;
-    public Dictionary<string, TrackInfo> tracks = new Dictionary<string, TrackInfo>();
 
     private void Awake()
     {
