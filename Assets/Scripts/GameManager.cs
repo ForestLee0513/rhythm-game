@@ -25,5 +25,6 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
         bmsFileSystem = new BMSFileSystem();
+
     }
 }

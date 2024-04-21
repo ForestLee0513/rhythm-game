@@ -10,7 +10,8 @@ using UnityEngine;
 
 public class BMSFileSystem
 {
-    private Dictionary<string, TrackInfo> trackInfoList = new Dictionary<string, TrackInfo>();
+    private Dictionary<string, List<TrackInfo>> trackInfoList = new Dictionary<string, List<TrackInfo>>();
+    private Dictionary<string, Dictionary<string, List<TrackInfo>>> directoryCache = new Dictionary<string, Dictionary<string, List<TrackInfo>>>();
     private List<string> rootPaths = new List<string>();
 
     public BMSFileSystem()
@@ -33,8 +34,13 @@ public class BMSFileSystem
         rootPaths.Add(path);
     }
 
-    public Dictionary<string, TrackInfo> ImportFiles(int index)
+    public Dictionary<string, List<TrackInfo>> ImportFiles(int index)
     {
+        if(directoryCache.ContainsKey(rootPaths[index]))
+        {
+            return directoryCache[rootPaths[index]];
+        }
+
         // load all bms files..
         List<string> extensions = new List<string> { "bms", "bme", "bml", "pms" };
         
@@ -46,6 +52,8 @@ public class BMSFileSystem
         {
             ParseSongInfoHeader(bmsFilePath);
         }
+
+        directoryCache.Add(rootPaths[index], trackInfoList);
 
         return trackInfoList;
     }
@@ -153,7 +161,14 @@ public class BMSFileSystem
                 }
             } while (!reader.EndOfStream);
 
-            trackInfoList.Add(Directory.GetParent(path).Name, trackInfo);
+            if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
+            {
+                trackInfoList[Directory.GetParent(path).Name].Add(trackInfo);
+            }
+            else {
+                trackInfoList.Add(Directory.GetParent(path).Name, new List<TrackInfo>());
+                trackInfoList[Directory.GetParent(path).Name].Add(trackInfo);
+            }
         }
     }
 }
