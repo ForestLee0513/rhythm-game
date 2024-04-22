@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer.Internal.Converters;
+using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class TrackSelectUIManager : MonoBehaviour
 {
@@ -20,6 +23,7 @@ public class TrackSelectUIManager : MonoBehaviour
     [SerializeField]
     GameObject ListItemPrefab;
     GameObject trackList;
+    GameObject trackListContent;
     GameObject backButton;
     #endregion
 
@@ -40,7 +44,8 @@ public class TrackSelectUIManager : MonoBehaviour
             return;
         }
 
-        trackList = transform.Find("FolderScrollView/Viewport/Content").gameObject;
+        trackList = transform.Find("FolderScrollView").gameObject;
+        trackListContent = trackList.transform.Find("Viewport/Content").gameObject;
         backButton = transform.Find("BackButton").gameObject;
 
         backButton.SetActive(false);
@@ -49,12 +54,19 @@ public class TrackSelectUIManager : MonoBehaviour
         {
             // delegate 추가용 index 지역 변수
             int index = i;
-            AppendToList(new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name, GameManager.Instance.RootPaths[index], () => { SelectFolder(index); });
+            AppendToList(
+                new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name, 
+                GameManager.Instance.RootPaths[index], 
+                () => 
+                { 
+                    SelectFolder(index); 
+                });
         }
     }
 
     private void AppendToList(string title, string description, UnityAction func)
     {
+        // append list
         GameObject item = Instantiate(ListItemPrefab);
         EventTrigger trigger = item.GetComponent<EventTrigger>();
 
@@ -65,17 +77,36 @@ public class TrackSelectUIManager : MonoBehaviour
         // add Event
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((eventData) => { func(); });
+        entry.callback.AddListener(
+            (eventData) => 
+            {
+                func(); 
+            });
         trigger.triggers.Add(entry);
 
         // set Parent
-        item.transform.SetParent(trackList.transform, false);
+        item.transform.SetParent(trackListContent.transform, false);
+        item.GetComponent<ListItem>().ParentScrollRect = trackList.GetComponent<ScrollRect>();
     }
 
     private void SelectFolder(int index)
     {
-        // 이거 index를 전달할 방법을 찾아야한다...
-        Debug.Log(index);
-        Debug.Log("SelectFolder");
+        GameManager.Instance.SelectFolder(index);
+
+        foreach (Transform child in trackListContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (string trackKey in GameManager.Instance.Tracks.Keys)
+        {
+            AppendToList(
+                GameManager.Instance.Tracks[trackKey][0].title, 
+                GameManager.Instance.RootPaths[index], 
+                () => 
+                { 
+                    Debug.Log("Track Select" + "/" + GameManager.Instance.Tracks[trackKey][0].title); 
+                });
+        }
     }
 }

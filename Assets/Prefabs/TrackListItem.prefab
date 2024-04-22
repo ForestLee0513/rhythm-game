@@ -146,7 +146,8 @@ GameObject:
   - component: {fileID: 1418073708007816339}
   - component: {fileID: 2566540815897564215}
   - component: {fileID: 4810997379260756111}
-  - component: {fileID: 8396507374237711749}
+  - component: {fileID: 3607407688312924099}
+  - component: {fileID: 4705521621886970394}
   m_Layer: 5
   m_Name: TrackListItem
   m_TagString: Untagged
@@ -239,7 +240,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &8396507374237711749
+--- !u!114 &3607407688312924099
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -252,6 +253,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates: []
+--- !u!114 &4705521621886970394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503931134442716846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaab5843c2748ef45978a831e5ea62ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ParentScrollRect: {fileID: 0}
 --- !u!1 &7050917247696968254
 GameObject:
   m_ObjectHideFlags: 0
