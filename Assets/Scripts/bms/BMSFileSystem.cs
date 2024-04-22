@@ -20,6 +20,7 @@ public class BMSFileSystem
         if (rootPaths.Count <= 0)
         {
             rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
+            rootPaths.Add("C:/bmsFiles");
         }
     }
     
