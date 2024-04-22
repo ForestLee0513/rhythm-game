@@ -25,6 +25,10 @@ public class TrackSelectUIManager : MonoBehaviour
     GameObject trackList;
     GameObject trackListContent;
     GameObject backButton;
+    GameObject listTitle;
+    GameObject listDescription;
+    string listTitleInitializedText;
+    string listDescriptionInitializedText;
     #endregion
 
     // Initialize //
@@ -47,6 +51,11 @@ public class TrackSelectUIManager : MonoBehaviour
         trackList = transform.Find("FolderScrollView").gameObject;
         trackListContent = trackList.transform.Find("Viewport/Content").gameObject;
         backButton = transform.Find("BackButton").gameObject;
+        listTitle = transform.Find("Title").gameObject;
+        listDescription = transform.Find("Description").gameObject;
+        listTitleInitializedText = listTitle.GetComponent<TextMeshProUGUI>().text;
+        listDescriptionInitializedText = listDescription.GetComponent<TextMeshProUGUI>().text;
+
 
         SetListToRootPaths();
     }
@@ -86,10 +95,13 @@ public class TrackSelectUIManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        listTitle.GetComponent<TextMeshProUGUI>().text = new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name;
+        listDescription.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.RootPaths[index];
+
         foreach (string trackKey in GameManager.Instance.Tracks.Keys)
         {
             AppendToList(
-                GameManager.Instance.Tracks[trackKey][0].title, 
+                trackKey, 
                 GameManager.Instance.RootPaths[index], 
                 () => 
                 { 
@@ -107,6 +119,9 @@ public class TrackSelectUIManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+
+        listTitle.GetComponent<TextMeshProUGUI>().text = listTitleInitializedText;
+        listDescription.GetComponent<TextMeshProUGUI>().text = listDescriptionInitializedText;
 
         for (int i = 0; i < GameManager.Instance.RootPaths.Count; ++i)
         {
