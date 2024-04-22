@@ -37,7 +37,7 @@ public class BMSFileSystem
 
     public Dictionary<string, List<TrackInfo>> ImportFiles(int index)
     {
-        if(directoryCache.ContainsKey(rootPaths[index]))
+        if (directoryCache.ContainsKey(rootPaths[index]))
         {
             return directoryCache[rootPaths[index]];
         }
@@ -55,8 +55,9 @@ public class BMSFileSystem
         }
 
         directoryCache.Add(rootPaths[index], trackInfoList);
+        trackInfoList = new Dictionary<string, List<TrackInfo>>();
 
-        return trackInfoList;
+        return directoryCache[rootPaths[index]];
     }
 
     private void ParseSongInfoHeader(string path)

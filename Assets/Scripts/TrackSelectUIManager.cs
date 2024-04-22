@@ -48,20 +48,7 @@ public class TrackSelectUIManager : MonoBehaviour
         trackListContent = trackList.transform.Find("Viewport/Content").gameObject;
         backButton = transform.Find("BackButton").gameObject;
 
-        backButton.SetActive(false);
-        // Initialize Lists
-        for (int i = 0; i < GameManager.Instance.RootPaths.Count; ++i)
-        {
-            // delegate 추가용 index 지역 변수
-            int index = i;
-            AppendToList(
-                new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name, 
-                GameManager.Instance.RootPaths[index], 
-                () => 
-                { 
-                    SelectFolder(index); 
-                });
-        }
+        SetListToRootPaths();
     }
 
     private void AppendToList(string title, string description, UnityAction func)
@@ -93,6 +80,7 @@ public class TrackSelectUIManager : MonoBehaviour
     {
         GameManager.Instance.SelectFolder(index);
 
+        backButton.SetActive(true);
         foreach (Transform child in trackListContent.transform)
         {
             Destroy(child.gameObject);
@@ -106,6 +94,30 @@ public class TrackSelectUIManager : MonoBehaviour
                 () => 
                 { 
                     Debug.Log("Track Select" + "/" + GameManager.Instance.Tracks[trackKey][0].title); 
+                });
+        }
+    }
+
+    public void SetListToRootPaths()
+    {
+        backButton.SetActive(false);
+        GameManager.Instance.UnSelectFolder();
+
+        foreach (Transform child in trackListContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < GameManager.Instance.RootPaths.Count; ++i)
+        {
+            // delegate 추가용 index 지역 변수
+            int index = i;
+            AppendToList(
+                new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name,
+                GameManager.Instance.RootPaths[index],
+                () =>
+                {
+                    SelectFolder(index);
                 });
         }
     }
