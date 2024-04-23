@@ -84,6 +84,7 @@ public class TrackSelectUIManager : MonoBehaviour
         judge = trackInfo.transform.Find("Judge/Text").gameObject;
 
         SetListToRootPaths();
+        trackInfo.SetActive(false);
     }
 
     private void AppendToList(string title, string description, UnityAction func)
@@ -165,6 +166,17 @@ public class TrackSelectUIManager : MonoBehaviour
 
     public void UpdateTrackInfo()
     {
+        if (GameManager.Instance.selectedTrack == null)
+        {
+            trackInfo.SetActive(false);
+            return;
+        }
+
+        if (trackInfo.activeSelf == false)
+        {
+            trackInfo.SetActive(true);
+        }
+
         // bpm 범위 출력을 위한 단순 정렬 실제 패턴에는 사용안함
         float[] bpmRangeToArr = GameManager.Instance.selectedTrack.bpmTable.Values.ToArray();
         string bpmRangeResult = "";

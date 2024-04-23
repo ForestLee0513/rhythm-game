@@ -51,12 +51,9 @@ public class GameManager : MonoBehaviour
         selectedTrackKey = key;
         selectedTrackIndex = 0;
 
-        // 곡 지정이 됐을 때만 UI 업데이트
-        if (selectedTrackKey != "")
-        {
-            selectedTrack = Tracks[selectedTrackKey][selectedTrackIndex];
-            TrackSelectUIManager.Instance.UpdateTrackInfo();
-        }
+
+        selectedTrack = Tracks[selectedTrackKey][selectedTrackIndex];
+        TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
 
     // 곡 Index 지정
@@ -64,7 +61,7 @@ public class GameManager : MonoBehaviour
     {
         if (selectedTrackKey == "")
         {
-            Debug.LogWarning("선택된 곡이 없습니다.");
+            TrackSelectUIManager.Instance.UpdateTrackInfo();
             return;
         }
 
@@ -106,6 +103,7 @@ public class GameManager : MonoBehaviour
         selectedTrackKey = "";
         selectedTrack = null;
         Tracks = null;
+        TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
 
     // 키보드 입력 제어 (곡 선택)
