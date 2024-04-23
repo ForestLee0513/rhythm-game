@@ -19,7 +19,7 @@ public class TrackSelectUIManager : MonoBehaviour
     public static TrackSelectUIManager Instance { get { return instance; } }
     #endregion
 
-    #region UI GameObjects
+    #region UI GameObjects - List
     [SerializeField]
     GameObject ListItemPrefab;
     GameObject trackList;
@@ -29,6 +29,11 @@ public class TrackSelectUIManager : MonoBehaviour
     GameObject listDescription;
     string listTitleInitializedText;
     string listDescriptionInitializedText;
+    #endregion
+    #region UI GameObjects - TrackInfo
+    GameObject TrackInfoContainer;
+    GameObject TrackInfoJacketImage;
+    GameObject TrackInfo;
     #endregion
 
     // Initialize //
@@ -48,6 +53,7 @@ public class TrackSelectUIManager : MonoBehaviour
             return;
         }
 
+        // Initialize GameObjects of List
         trackList = transform.Find("FolderScrollView").gameObject;
         trackListContent = trackList.transform.Find("Viewport/Content").gameObject;
         backButton = transform.Find("BackButton").gameObject;
@@ -56,6 +62,10 @@ public class TrackSelectUIManager : MonoBehaviour
         listTitleInitializedText = listTitle.GetComponent<TextMeshProUGUI>().text;
         listDescriptionInitializedText = listDescription.GetComponent<TextMeshProUGUI>().text;
 
+        // Initialize GameObjects of Track Info
+        TrackInfoContainer = transform.Find("TrackInfoContainer").gameObject;
+        TrackInfoJacketImage = TrackInfoContainer.transform.Find("TrackInfoJacketImage").gameObject;
+        TrackInfo = TrackInfoContainer.transform.Find("TrackInfo").gameObject;
 
         SetListToRootPaths();
     }
@@ -104,8 +114,8 @@ public class TrackSelectUIManager : MonoBehaviour
                 trackKey, 
                 GameManager.Instance.RootPaths[index], 
                 () => 
-                { 
-                    Debug.Log("Track Select" + "/" + GameManager.Instance.Tracks[trackKey][0].title); 
+                {
+                    GameManager.Instance.SetTrackKey(trackKey);
                 });
         }
     }
@@ -135,5 +145,12 @@ public class TrackSelectUIManager : MonoBehaviour
                     SelectFolder(index);
                 });
         }
+    }
+
+    public void UpdateTrackInfo()
+    {
+        Debug.Log(GameManager.Instance.selectedTrack.title);
+        Debug.Log(GameManager.Instance.selectedTrack.playLevel);
+        Debug.Log(GameManager.Instance.selectedTrack.genre);
     }
 }

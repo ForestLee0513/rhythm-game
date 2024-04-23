@@ -133,9 +133,6 @@ public class BMSFileSystem
                         case "#ARTIST":
                             trackInfo.artist = headerValue;
                             break;
-                        case "#BPM":
-                            float.TryParse(headerValue, out trackInfo.bpm);
-                            break;
                         case "#PLAYLEVEL":
                             Int32.TryParse(headerValue, out trackInfo.playLevel);
                             break;
@@ -160,6 +157,25 @@ public class BMSFileSystem
                     if (headerKey.StartsWith("BMP"))
                     {
                         trackInfo.imageFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                    }
+
+                    // BPM //
+                    if (line.StartsWith("#BPM"))
+                    {
+                        if (line[4] == ' ')
+                        {
+                            // 일반 BPM
+                            float.TryParse(headerValue, out trackInfo.bpm);
+                        }
+                        else
+                        {
+                            // 가변 BPM
+                            string[] bpmKeyValuePair = line.Substring(4).Split(" ");
+                            string bpmKey = bpmKeyValuePair[0];
+                            Single.TryParse(bpmKeyValuePair[1], out float bpmValue);
+
+                            trackInfo.bpmTable.Add(bpmKey, bpmValue);
+                        }
                     }
                 }
             } while (!reader.EndOfStream);
