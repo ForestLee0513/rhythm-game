@@ -150,7 +150,7 @@ public class BMSFileSystem
                             Single.TryParse(headerValue, out trackInfo.total);
                             break;
                         case "#STAGEFILE":
-                            trackInfo.stageFile = Path.Combine(path, headerValue);
+                            trackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
                             break;
                     }
 

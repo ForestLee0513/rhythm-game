@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
@@ -11,6 +12,7 @@ using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class TrackSelectUIManager : MonoBehaviour
@@ -194,6 +196,24 @@ public class TrackSelectUIManager : MonoBehaviour
             }
         }
 
+        // 앨범 재킷 지정
+        Texture2D tex = null;
+        byte[] fileData;
+
+        if (Path.GetExtension(GameManager.Instance.selectedTrack.stageFile) == ".bmp")
+        {
+            Debug.Log("bmp파일임..");
+        }
+        else
+        {
+            if (File.Exists(GameManager.Instance.selectedTrack.stageFile))
+            {
+                fileData = File.ReadAllBytes(GameManager.Instance.selectedTrack.stageFile);
+                tex = new Texture2D(1, 1);
+                tex.LoadImage(fileData);
+                trackInfoJacketImage.GetComponent<RawImage>().texture = tex;
+            }
+        }
         title.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.title;
         artist.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.artist;
         level.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.playLevel.ToString();
