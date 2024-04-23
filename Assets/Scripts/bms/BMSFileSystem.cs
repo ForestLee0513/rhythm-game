@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -76,7 +77,7 @@ public class BMSFileSystem
         int randomResult = 0;
 
         trackInfo.path = path;
-        using (var reader = new StreamReader(path))
+        using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
         {
             do
             {

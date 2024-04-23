@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
@@ -31,9 +32,16 @@ public class TrackSelectUIManager : MonoBehaviour
     string listDescriptionInitializedText;
     #endregion
     #region UI GameObjects - TrackInfo
-    GameObject TrackInfoContainer;
-    GameObject TrackInfoJacketImage;
-    GameObject TrackInfo;
+    GameObject trackInfoContainer;
+    GameObject trackInfoJacketImage;
+    GameObject trackInfo;
+    GameObject title;
+    GameObject artist;
+    GameObject level;
+    GameObject genre;
+    GameObject bpm;
+    GameObject score;
+    GameObject judge;
     #endregion
 
     // Initialize //
@@ -63,9 +71,17 @@ public class TrackSelectUIManager : MonoBehaviour
         listDescriptionInitializedText = listDescription.GetComponent<TextMeshProUGUI>().text;
 
         // Initialize GameObjects of Track Info
-        TrackInfoContainer = transform.Find("TrackInfoContainer").gameObject;
-        TrackInfoJacketImage = TrackInfoContainer.transform.Find("TrackInfoJacketImage").gameObject;
-        TrackInfo = TrackInfoContainer.transform.Find("TrackInfo").gameObject;
+        trackInfoContainer = transform.Find("TrackInfoContainer").gameObject;
+        trackInfoJacketImage = trackInfoContainer.transform.Find("TrackInfoJacketImage").gameObject;
+        trackInfo = trackInfoContainer.transform.Find("TrackInfo").gameObject;
+
+        title = trackInfo.transform.Find("Title/Text").gameObject;
+        artist = trackInfo.transform.Find("Artist/Text").gameObject;
+        level = trackInfo.transform.Find("Level/Text").gameObject;
+        genre = trackInfo.transform.Find("Genre/Text").gameObject;
+        bpm = trackInfo.transform.Find("BPM/Text").gameObject;
+        score = trackInfo.transform.Find("Score/Text").gameObject;
+        judge = trackInfo.transform.Find("Judge/Text").gameObject;
 
         SetListToRootPaths();
     }
@@ -149,7 +165,27 @@ public class TrackSelectUIManager : MonoBehaviour
 
     public void UpdateTrackInfo()
     {
-        Debug.Log(GameManager.Instance.selectedTrack.title);
-        Debug.Log(GameManager.Instance.selectedTrack.playLevel);
+        // bpm 범위 출력을 위한 단순 정렬 실제 패턴에는 사용안함
+        float[] bpmRangeToArr = GameManager.Instance.selectedTrack.bpmTable.Values.ToArray();
+        string bpmRangeResult = "";
+        if (bpmRangeToArr.Length > 0)
+        {
+            Array.Sort(bpmRangeToArr, (a, b) => (a > b) ? 1 : -1);
+
+            if (bpmRangeToArr.Length == 1)
+            {
+                bpmRangeResult = $" ({GameManager.Instance.selectedTrack.bpm} ~ {bpmRangeToArr[0]})";
+            }
+            else
+            {
+                bpmRangeResult = $" ({bpmRangeToArr[0]} ~ {bpmRangeToArr[bpmRangeToArr.Length - 1]})";
+            }
+        }
+
+        title.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.title;
+        artist.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.artist;
+        level.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.playLevel.ToString();
+        genre.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.genre;
+        bpm.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.bpm.ToString() + bpmRangeResult;
     }
 }
