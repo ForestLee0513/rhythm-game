@@ -128,8 +128,8 @@ public class TrackSelectUIManager : MonoBehaviour
         foreach (string trackKey in GameManager.Instance.Tracks.Keys)
         {
             AppendToList(
-                trackKey, 
-                GameManager.Instance.RootPaths[index], 
+                trackKey,
+                $"Total: {GameManager.Instance.Tracks[trackKey].Count}", 
                 () => 
                 {
                     GameManager.Instance.SetTrackKey(trackKey);

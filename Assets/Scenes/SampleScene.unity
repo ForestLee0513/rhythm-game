@@ -492,7 +492,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Track Info
+  m_text: Track Folders
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3591c1543271e47c79c79f5e728a9c14, type: 2}
   m_sharedMaterial: {fileID: -8853978760518271108, guid: 3591c1543271e47c79c79f5e728a9c14, type: 2}
@@ -2403,7 +2403,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1127609467}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.5
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
