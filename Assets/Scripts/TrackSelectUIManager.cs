@@ -151,6 +151,5 @@ public class TrackSelectUIManager : MonoBehaviour
     {
         Debug.Log(GameManager.Instance.selectedTrack.title);
         Debug.Log(GameManager.Instance.selectedTrack.playLevel);
-        Debug.Log(GameManager.Instance.selectedTrack.genre);
     }
 }

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-public class TrackInfo
+public class TrackInfo : IComparable
 {
     public string genre = "";
     public string title = "";
@@ -15,4 +16,14 @@ public class TrackInfo
     public Dictionary<string, string> audioFileNames = new Dictionary<string, string>();
     public Dictionary<string, string> imageFileNames = new Dictionary<string, string>();
     public Dictionary<string, float> bpmTable = new Dictionary<string, float>();
+
+    public int CompareTo(object trackInfo)
+    {
+        if (playLevel > (trackInfo as TrackInfo).playLevel)
+            return 1;
+        else if (playLevel == (trackInfo as TrackInfo).playLevel)
+            return 0;
+        else
+            return -1;
+    }
 }

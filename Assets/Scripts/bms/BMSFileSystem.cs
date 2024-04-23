@@ -55,6 +55,12 @@ public class BMSFileSystem
             ParseSongInfoHeader(bmsFilePath);
         }
 
+        // 정렬
+        foreach (string trackInfoKey in trackInfoList.Keys) 
+        {
+            trackInfoList[trackInfoKey].Sort();
+        }
+
         directoryCache.Add(rootPaths[index], trackInfoList);
         trackInfoList = new Dictionary<string, List<TrackInfo>>();
 
