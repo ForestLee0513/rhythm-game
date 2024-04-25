@@ -20,7 +20,7 @@ public class BMSFileSystem
         // 지금은 카운터 없으면 임의로 지정하지만 json으로 rootPath를 저장할 수 있게 된다면 에러 반환 예정.
         if (rootPaths.Count <= 0)
         {
-            //rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
+            rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
             rootPaths.Add("C:/bmsFiles");
             rootPaths.Add("C:/testBmsFile");
         }

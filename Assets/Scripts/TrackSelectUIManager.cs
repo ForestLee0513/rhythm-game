@@ -14,6 +14,8 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using B83.Image.BMP;
+
 
 public class TrackSelectUIManager : MonoBehaviour
 {
@@ -204,21 +206,29 @@ public class TrackSelectUIManager : MonoBehaviour
             }
         }
 
-        // �ٹ� ��Ŷ ����
         Texture2D tex = null;
         byte[] fileData;
 
+        // Load image //
+        // Load bmp
         if (Path.GetExtension(GameManager.Instance.selectedTrack.stageFile) == ".bmp")
         {
-            Debug.Log("bmp������..");
+            BMPLoader loader = new BMPLoader();
+            BMPImage img = loader.LoadBMP(GameManager.Instance.selectedTrack.stageFile);
+            tex = img.ToTexture2D();
+            trackInfoJacketImage.GetComponent<RawImage>().texture = tex;
         }
         else
         {
+            // Load png, jpg ...
             if (File.Exists(GameManager.Instance.selectedTrack.stageFile))
             {
                 fileData = File.ReadAllBytes(GameManager.Instance.selectedTrack.stageFile);
+                
                 tex = new Texture2D(1, 1);
                 tex.LoadImage(fileData);
+                float ratio = (float)tex.width / tex.height;
+                trackInfoJacketImage.GetComponent<AspectRatioFitter>().aspectRatio = ratio;
                 trackInfoJacketImage.GetComponent<RawImage>().texture = tex;
             }
         }
