@@ -39,6 +39,13 @@ public class BMSFileSystem
 
     public Dictionary<string, List<TrackInfo>> ImportFiles(int index)
     {
+        // 경로가 없을 경우 null 반환
+        if (!Directory.Exists(rootPaths[index]))
+        {
+            return null;
+        }
+
+        // 디렉터리 캐시가 있을 경우 캐시 결과값 출력
         if (directoryCache.ContainsKey(rootPaths[index]))
         {
             return directoryCache[rootPaths[index]];

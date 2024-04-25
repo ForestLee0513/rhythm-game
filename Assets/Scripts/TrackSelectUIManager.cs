@@ -118,6 +118,14 @@ public class TrackSelectUIManager : MonoBehaviour
     {
         GameManager.Instance.SelectFolder(index);
 
+        // ê²½ë¡œê°€ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš° ì„ íƒì„ ì‹œë„í–ˆë˜ ê²½ë¡œ ì„ íƒ ì·¨ì†Œ ë° ì—ëŸ¬ ì¶œë ¥ (ì¶”í›„ ëª¨ë‹¬ë„ ì¶œë ¥ ì˜ˆì •.)
+        if (GameManager.Instance.Tracks == null)
+        {
+            Debug.LogError("í•´ë‹¹ ê²½ë¡œê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            GameManager.Instance.UnSelectFolder();
+            return;
+        }
+
         backButton.SetActive(true);
         foreach (Transform child in trackListContent.transform)
         {
@@ -154,7 +162,7 @@ public class TrackSelectUIManager : MonoBehaviour
 
         for (int i = 0; i < GameManager.Instance.RootPaths.Count; ++i)
         {
-            // delegate Ãß°¡¿ë index Áö¿ª º¯¼ö
+            // delegate ï¿½ß°ï¿½ï¿½ï¿½ index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             int index = i;
             AppendToList(
                 new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name,
@@ -179,7 +187,7 @@ public class TrackSelectUIManager : MonoBehaviour
             trackInfo.SetActive(true);
         }
 
-        // bpm ¹üÀ§ Ãâ·ÂÀ» À§ÇÑ ´Ü¼ø Á¤·Ä ½ÇÁ¦ ÆĞÅÏ¿¡´Â »ç¿ë¾ÈÇÔ
+        // bpm ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         float[] bpmRangeToArr = GameManager.Instance.selectedTrack.bpmTable.Values.ToArray();
         string bpmRangeResult = "";
         if (bpmRangeToArr.Length > 0)
@@ -196,13 +204,13 @@ public class TrackSelectUIManager : MonoBehaviour
             }
         }
 
-        // ¾Ù¹ü ÀçÅ¶ ÁöÁ¤
+        // ï¿½Ù¹ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
         Texture2D tex = null;
         byte[] fileData;
 
         if (Path.GetExtension(GameManager.Instance.selectedTrack.stageFile) == ".bmp")
         {
-            Debug.Log("bmpÆÄÀÏÀÓ..");
+            Debug.Log("bmpï¿½ï¿½ï¿½ï¿½ï¿½ï¿½..");
         }
         else
         {
