@@ -1,8 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -44,8 +40,8 @@ public class GameManager : MonoBehaviour
         RootPaths = BmsFileSystem.GetRootPaths();
     }
 
-    // °î ¼±ÅÃ °ü·Ã ¸Å¼Òµå //
-    // °î Key ÁöÁ¤
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¼Òµï¿½ //
+    // ï¿½ï¿½ Key ï¿½ï¿½ï¿½ï¿½
     public void SetTrackKey(string key)
     {
         selectedTrackKey = key;
@@ -56,7 +52,7 @@ public class GameManager : MonoBehaviour
         TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
 
-    // °î Index ÁöÁ¤
+    // ï¿½ï¿½ Index ï¿½ï¿½ï¿½ï¿½
     public void UpdateTrackIndex(updateSelectedTrackIndexCommandEnum command)
     {
         if (selectedTrackKey == "")
@@ -87,15 +83,15 @@ public class GameManager : MonoBehaviour
         TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
 
-    // Æú´õ °ü·Ã ¸Å¼Òµå //
-    // Æú´õ ¼±ÅÃ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¼Òµï¿½ //
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void SelectFolder(int index)
     {
         SelectedFolderIndex = index;
         Tracks = BmsFileSystem.ImportFiles(index);
     }
 
-    // Æú´õ ¼±ÅÃÇØÁ¦
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void UnSelectFolder()
     {
         SelectedFolderIndex = -1;
@@ -106,15 +102,15 @@ public class GameManager : MonoBehaviour
         TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
 
-    // Å°º¸µå ÀÔ·Â Á¦¾î (°î ¼±ÅÃ)
+    // Å°ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     private void Update()
     {
-        // °î index °¨¼Ò
+        // ï¿½ï¿½ index ï¿½ï¿½ï¿½ï¿½
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Decrease);
         }
-        // °î index Áõ°¡
+        // ï¿½ï¿½ index ï¿½ï¿½ï¿½ï¿½
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Increase);
