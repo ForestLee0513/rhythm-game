@@ -1,22 +1,52 @@
 using System;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnityEngine;
 
 public class BMSParser
 {
-    TrackInfo trackInfo = new TrackInfo();
+    #region Random Statements
     public TrackInfo TrackInfo { get { return trackInfo; } }
     bool isRandom = false;
     bool isIfStatementTrue = false;
     bool isCheckIfstatementStarted = false;
     int randomResult = 0;
+    #endregion
+    #region Track File info
+    TrackInfo trackInfo = new TrackInfo();
     string path = "";
+    #endregion
 
+    #region Initializer
     public BMSParser(string path)
     {
         this.path = path;
     }
+    #endregion
 
-    public void ParseHeader(string line)
+    // 헤더 //
+    // 헤더 파일 불러오기
+    public void ReadHeader()
+    {
+        Regex mainDataSyntaxRegex = new Regex("#\\d{5}");
+        using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
+        {
+            do
+            {
+                string line = reader.ReadLine();
+                if (mainDataSyntaxRegex.IsMatch(line))
+                {
+                    break;
+                }
+
+                ParseHeader(line);
+            } while (!reader.EndOfStream);
+        }
+    }
+
+    // 헤더 파일 파싱
+    private void ParseHeader(string line)
     {
         string headerKey = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(0, line.IndexOf(" ")) : line;
         string headerValue = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(" ") + 1) : "";
@@ -123,16 +153,22 @@ public class BMSParser
         }
     }
 
-    public void ResetRandomState()
+    // 메인 채보 데이터 //
+    // BMS 파일 불러오기
+    public void ParseMainData()
     {
-        isRandom = false;
-        isIfStatementTrue = false;
-        isCheckIfstatementStarted = false;
-        randomResult = 0;
-        path = "";
+        using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
+        {
+            do
+            {
+                string line = reader.ReadLine();
+                ReadMainData(line);
+            } while (!reader.EndOfStream);
+        }
     }
 
-    public void ParseMainData(string line)
+    // 메인 채보 파싱
+    private void ReadMainData(string line)
     {
 
     }

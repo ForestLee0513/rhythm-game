@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
         selectedTrackKey = key;
         selectedTrackIndex = 0;
 
-
         selectedTrack = Tracks[selectedTrackKey][selectedTrackIndex];
         TrackSelectUIManager.Instance.UpdateTrackInfo();
     }
@@ -100,20 +99,5 @@ public class GameManager : MonoBehaviour
         selectedTrack = null;
         Tracks = null;
         TrackSelectUIManager.Instance.UpdateTrackInfo();
-    }
-
-    // Ű���� �Է� ���� (�� ����)
-    private void Update()
-    {
-        // �� index ����
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Decrease);
-        }
-        // �� index ����
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Increase);
-        }
     }
 }

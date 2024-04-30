@@ -79,25 +79,16 @@ public class BMSFileSystem
     {
         BMSParser parser = new BMSParser(path);
 
-        using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
+        parser.ReadHeader();
+
+        if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
         {
-            do
-            {
-                string line = reader.ReadLine();
-                parser.ParseHeader(line);
-            } while (!reader.EndOfStream);
-
-            parser.ResetRandomState();
-
-            if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
-            {
-                trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
-            }
-            else 
-            {
-                trackInfoList.Add(Directory.GetParent(path).Name, new List<TrackInfo>());
-                trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
-            }
+            trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
+        }
+        else 
+        {
+            trackInfoList.Add(Directory.GetParent(path).Name, new List<TrackInfo>());
+            trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
         }
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using B83.Image.BMP;
+using static GameManager;
 
 
 public class TrackSelectUIManager : MonoBehaviour
@@ -57,6 +58,7 @@ public class TrackSelectUIManager : MonoBehaviour
             return;
         }
 
+        // Initialize UI Elements //
         // Initialize GameObjects of List
         trackList = transform.Find("FolderScrollView").gameObject;
         trackListContent = trackList.transform.Find("Viewport/Content").gameObject;
@@ -81,6 +83,56 @@ public class TrackSelectUIManager : MonoBehaviour
 
         SetListToRootPaths();
         trackInfo.SetActive(false);
+    }
+
+    private void Update()
+    {
+        // 곡 선택
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            MoveToInGame();
+        }
+
+        // 게임 종료
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitController();
+        }
+
+        // 곡 난이도 변경 //
+        // index 감소
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            GameManager.Instance.UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Decrease);
+        }
+        // index 증가
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            GameManager.Instance.UpdateTrackIndex(updateSelectedTrackIndexCommandEnum.Increase);
+        }
+    }
+
+    private void MoveToInGame()
+    {
+        // 곡
+        if (GameManager.Instance.selectedTrack == null)
+        {
+            Debug.LogError("곡이 선택되지 않아 이동하지 않습니다..");
+            return;
+        }
+
+        Debug.Log(GameManager.Instance.selectedTrack.title + "/" + GameManager.Instance.selectedTrack.playLevel);
+        Debug.Log("인게임으로 이동");
+    }    
+
+    private void ExitController()
+    {
+        // 폴더가 선택됐을 때 실행
+        if (GameManager.Instance.SelectedFolderIndex >= 0)
+        {
+            Debug.Log("폴더선택 해제");
+            SetListToRootPaths();
+        }
     }
 
     private void AppendToList(string title, string description, UnityAction func)
@@ -156,7 +208,7 @@ public class TrackSelectUIManager : MonoBehaviour
 
         for (int i = 0; i < GameManager.Instance.RootPaths.Count; ++i)
         {
-            // delegate �߰��� index ���� ����
+            // delegate에 index를 지정하기 위한 지역변수
             int index = i;
             AppendToList(
                 new DirectoryInfo(GameManager.Instance.RootPaths[index]).Name,
