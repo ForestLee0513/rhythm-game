@@ -7,21 +7,27 @@ using UnityEngine;
 public class BMSParser
 {
     #region Random Statements
-    public TrackInfo TrackInfo { get { return trackInfo; } }
     bool isRandom = false;
     bool isIfStatementTrue = false;
     bool isCheckIfstatementStarted = false;
     int randomResult = 0;
     #endregion
     #region Track File info
-    TrackInfo trackInfo = new TrackInfo();
     string path = "";
+    public TrackInfo TrackInfo { get { return trackInfo; } }
+    TrackInfo trackInfo = new TrackInfo();
     #endregion
 
     #region Initializer
     public BMSParser(string path)
     {
         this.path = path;
+    }
+
+    public BMSParser(TrackInfo trackInfo)
+    {
+        this.trackInfo = trackInfo;
+        path = trackInfo.path;
     }
     #endregion
 
