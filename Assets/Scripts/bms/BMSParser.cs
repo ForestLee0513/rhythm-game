@@ -125,6 +125,9 @@ public class BMSParser
                 case "#STAGEFILE":
                     trackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
                     break;
+                case "#LNOBJ":
+                    trackInfo.lnobjList.Add(headerValue);
+                    break;
             }
 
             // 파일 정보 관련 파싱 //
@@ -134,9 +137,16 @@ public class BMSParser
                 trackInfo.audioFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
             }
             // BGA 이미지 (mp4도 있을수도 있음.)
-            if (headerKey.StartsWith("BMP"))
+            if (headerKey.StartsWith("#BMP"))
             {
                 trackInfo.imageFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+            }
+
+            // STOP //
+            if (headerKey.StartsWith("#STOP"))
+            {
+                Int32.TryParse(headerValue, out int stop);
+                trackInfo.stopTable.Add(headerKey.Substring(5), stop);
             }
 
             // BPM //
@@ -177,6 +187,5 @@ public class BMSParser
     // 메인 채보 파싱
     private void ReadMainData(string line)
     {
-        Debug.Log(line);
     }
 }
