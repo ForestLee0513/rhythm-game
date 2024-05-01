@@ -9,7 +9,6 @@ public class InGameManager : MonoBehaviour
 
     void Start()
     {
-        // 单捞磐 颇教 贸府
         bmsParser = new BMSParser(GameManager.Instance.selectedTrack);
         bmsParser.ParseMainData();
         patternData = bmsParser.TrackInfo;

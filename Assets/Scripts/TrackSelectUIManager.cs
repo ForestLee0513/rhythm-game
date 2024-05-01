@@ -121,8 +121,7 @@ public class TrackSelectUIManager : MonoBehaviour
             return;
         }
 
-        Debug.Log(GameManager.Instance.selectedTrack.title + "/" + GameManager.Instance.selectedTrack.playLevel);
-        Debug.Log("인게임으로 이동");
+        SceneLoader.LoadScene("InGame");
     }    
 
     private void ExitController()

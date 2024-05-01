@@ -22,6 +22,7 @@ public class BMSParser
     public BMSParser(string path)
     {
         this.path = path;
+        trackInfo.path = path;
     }
 
     public BMSParser(TrackInfo trackInfo)
@@ -176,6 +177,6 @@ public class BMSParser
     // 메인 채보 파싱
     private void ReadMainData(string line)
     {
-
+        Debug.Log(line);
     }
 }
