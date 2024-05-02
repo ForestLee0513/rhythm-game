@@ -13,7 +13,7 @@ public class TrackInfo : IComparable
     public int playerType = 0;
     public int playLevel = 0;
     public int rank = 0;
-    public Dictionary<string, string> audioFileNames = new Dictionary<string, string>();
+    public Dictionary<int, string> audioFileNames = new Dictionary<int, string>();
     public Dictionary<string, string> imageFileNames = new Dictionary<string, string>();
     public Dictionary<string, float> bpmTable = new Dictionary<string, float>();
     public Dictionary<string, int> stopTable = new Dictionary<string, int>();

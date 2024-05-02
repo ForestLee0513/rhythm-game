@@ -39,48 +39,48 @@ public class SoundManager : MonoBehaviour
     [System.Obsolete]
     public void LoadSounds(TrackInfo track)
     {
-        StartCoroutine(LoadSound(track));
+        // StartCoroutine(LoadSound(track));
     }
 
-    private IEnumerator LoadSound(TrackInfo track)
-    {
-        int extensionFailCount = 0;
-        foreach (string audioHexKey in track.audioFileNames.Keys)
-        {
-            string url = track.audioFileNames[audioHexKey];
-            UnityWebRequest www = null;
-            extensionFailCount = 0;
-            AudioType type = AudioType.OGGVORBIS;
-            do
-            {
-                if (File.Exists(System.Web.HttpUtility.UrlDecode(url) + extensions[extensionFailCount]))
-                {
-                    url = url + extensions[extensionFailCount];
-                    type = extensionTypes[extensionFailCount];
-                    break;
-                }
-                ++extensionFailCount;
-            }
-            while (extensionFailCount < extensions.Length - 1);
+    // private IEnumerator LoadSound(TrackInfo track)
+    // {
+    //     int extensionFailCount = 0;
+    //     foreach (string audioHexKey in track.audioFileNames.Keys)
+    //     {
+    //         string url = track.audioFileNames[audioHexKey];
+    //         UnityWebRequest www = null;
+    //         extensionFailCount = 0;
+    //         AudioType type = AudioType.OGGVORBIS;
+    //         do
+    //         {
+    //             if (File.Exists(System.Web.HttpUtility.UrlDecode(url) + extensions[extensionFailCount]))
+    //             {
+    //                 url = url + extensions[extensionFailCount];
+    //                 type = extensionTypes[extensionFailCount];
+    //                 break;
+    //             }
+    //             ++extensionFailCount;
+    //         }
+    //         while (extensionFailCount < extensions.Length - 1);
 
-            www = UnityWebRequestMultimedia.GetAudioClip("file://" + url, type);
-            yield return www.SendWebRequest();
+    //         www = UnityWebRequestMultimedia.GetAudioClip("file://" + url, type);
+    //         yield return www.SendWebRequest();
 
-            Debug.Log(url);
-            Debug.Log(www.responseCode);
+    //         Debug.Log(url);
+    //         Debug.Log(www.responseCode);
 
-            if (www.downloadHandler.data.Length != 0)
-            {
-                AudioClip c = DownloadHandlerAudioClip.GetContent(www);
-                c.LoadAudioData();
-                audioClipCache.Add(audioHexKey, c);
-            }
-            else
-            {
-                Debug.LogWarning($"Failed to read sound data : {www.url}");
-            }
-        }
-    }
+    //         if (www.downloadHandler.data.Length != 0)
+    //         {
+    //             AudioClip c = DownloadHandlerAudioClip.GetContent(www);
+    //             c.LoadAudioData();
+    //             audioClipCache.Add(audioHexKey, c);
+    //         }
+    //         else
+    //         {
+    //             Debug.LogWarning($"Failed to read sound data : {www.url}");
+    //         }
+    //     }
+    // }
 
     public void PlayBaseSound()
     {

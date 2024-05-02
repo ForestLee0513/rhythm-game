@@ -32,24 +32,29 @@ public class BMSParser
     }
     #endregion
 
+
+    private void ResetRandomState()
+    {
+        isRandom = false;
+        isIfStatementTrue = false;
+        isCheckIfstatementStarted = false;
+        randomResult = 0;
+    }
+
     // 헤더 //
     // 헤더 파일 불러오기
     public void ReadHeader()
     {
-        Regex mainDataSyntaxRegex = new Regex("#\\d{5}");
         using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
         {
             do
             {
                 string line = reader.ReadLine();
-                if (mainDataSyntaxRegex.IsMatch(line))
-                {
-                    break;
-                }
 
                 ParseHeader(line);
             } while (!reader.EndOfStream);
         }
+        ResetRandomState();
     }
 
     // 헤더 파일 파싱
@@ -134,7 +139,7 @@ public class BMSParser
             // 오디오
             if (headerKey.StartsWith("#WAV"))
             {
-                trackInfo.audioFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                trackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
             }
             // BGA 이미지 (mp4도 있을수도 있음.)
             if (headerKey.StartsWith("#BMP"))
@@ -174,18 +179,97 @@ public class BMSParser
     // BMS 파일 불러오기
     public void ParseMainData()
     {
+        bool isMainDataParseStarted = false;
         using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
         {
             do
             {
                 string line = reader.ReadLine();
-                ReadMainData(line);
+                if (isMainDataParseStarted)
+                {
+                    ReadMainData(line);
+                }
+                else
+                {
+                    isMainDataParseStarted = line.IndexOf(":") > -1;
+                }
             } while (!reader.EndOfStream);
         }
+
+        ResetRandomState();
     }
 
     // 메인 채보 파싱
     private void ReadMainData(string line)
     {
+        string statementDataKey = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(0, line.IndexOf(" ")) : line;
+        string statementDataValue = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(" ") + 1) : "";
+
+        string mainDataKey = line.IndexOf(":") > -1 && line.StartsWith("#") ? line.Substring(1, line.IndexOf(":") - 1) : "";
+        string mainDataValue = line.IndexOf(":") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(":") + 1) : "";
+
+        // Random에 대한 전처리 (#RANDOM 숫자 / #ENDRANDOM으로 구분) //
+        // 랜덤 값 지정
+        if (statementDataKey == "#RANDOM")
+        {
+            isRandom = true;
+            Int32.TryParse(statementDataValue, out int randomNumber);
+            randomResult = new System.Random().Next(1, randomNumber + 1);
+        }
+
+        // 랜덤 탈출
+        if (statementDataKey == "#ENDRANDOM")
+        {
+            isRandom = false;
+            randomResult = 0;
+        }
+
+        // 조건에 대한 전처리 (#IF 숫자 / #ENDIF로 구분) // 
+        // 조건 검색
+        if (statementDataKey == "#IF" && Int32.TryParse(statementDataValue, out int parsedStatementDataValue) && isRandom == true)
+        {
+            isCheckIfstatementStarted = true;
+            if (parsedStatementDataValue == randomResult)
+            {
+                isIfStatementTrue = true;
+            }
+            else
+            {
+                isIfStatementTrue = false;
+            }
+        }
+
+        // 조건 탈출
+        if (statementDataKey == "#ENDIF")
+        {
+            isCheckIfstatementStarted = false;
+            isIfStatementTrue = false;
+        }
+
+        if (isRandom == false || (isIfStatementTrue == true && isCheckIfstatementStarted == true) || isCheckIfstatementStarted == false)
+        {
+            if (mainDataKey != "" && mainDataValue != "")
+            {
+                // 마디
+                Debug.Log(mainDataKey.Substring(0,3));
+            }
+        }
+    }
+
+    public static int Decode36(string str)
+    {
+        if (str.Length != 2) return -1;
+
+        int result = 0;
+        if (str[1] >= 'A')
+            result += str[1] - 'A' + 10;
+        else
+            result += str[1] - '0';
+        if (str[0] >= 'A')
+            result += (str[0] - 'A' + 10) * 36;
+        else
+            result += (str[0] - '0') * 36;
+
+        return result;
     }
 }
