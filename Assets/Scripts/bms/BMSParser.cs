@@ -139,7 +139,7 @@ public class BMSParser
             // 오디오
             if (headerKey.StartsWith("#WAV"))
             {
-                trackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                trackInfo.audioFileNames.Add(Base36.Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
             }
             // BGA 이미지 (mp4도 있을수도 있음.)
             if (headerKey.StartsWith("#BMP"))
@@ -254,22 +254,5 @@ public class BMSParser
                 Debug.Log(mainDataKey.Substring(0,3));
             }
         }
-    }
-
-    public static int Decode36(string str)
-    {
-        if (str.Length != 2) return -1;
-
-        int result = 0;
-        if (str[1] >= 'A')
-            result += str[1] - 'A' + 10;
-        else
-            result += str[1] - '0';
-        if (str[0] >= 'A')
-            result += (str[0] - 'A' + 10) * 36;
-        else
-            result += (str[0] - '0') * 36;
-
-        return result;
     }
 }
