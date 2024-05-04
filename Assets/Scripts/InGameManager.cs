@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class InGameManager : MonoBehaviour
 {
-    BMSParser bmsParser = null;
-    TrackInfo patternData = null;
+    Pattern patternData = null;
 
     void Start()
     {
-        bmsParser = new BMSParser(GameManager.Instance.selectedTrack);
-        bmsParser.ParseMainData();
-        patternData = bmsParser.TrackInfo;
+        patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
+        Debug.Log(patternData.bar);
     }
 
     // Update is called once per frame

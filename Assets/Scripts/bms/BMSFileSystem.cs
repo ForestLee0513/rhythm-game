@@ -77,9 +77,7 @@ public class BMSFileSystem
 
     private void ReadFile(string path)
     {
-        BMSParser parser = new BMSParser(path);
-
-        parser.ReadHeader();
+        BMSHeaderParser parser = new BMSHeaderParser(path);
 
         if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
         {

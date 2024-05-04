@@ -18,6 +18,7 @@ public class TrackInfo : IComparable
     public Dictionary<string, float> bpmTable = new Dictionary<string, float>();
     public Dictionary<string, int> stopTable = new Dictionary<string, int>();
     public List<string> lnobjList = new List<string>();
+    public int barCount = 0;
 
     public int CompareTo(object trackInfo)
     {

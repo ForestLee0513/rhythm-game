@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SelectSongs.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: Assets/Scenes/LoadingScreen.unity
+    guid: 5264253cf6ccc4fcaab1b7a3901c37d6
+  - enabled: 1
     path: Assets/Scenes/InGame.unity
     guid: 9829a58b1bdaf4684a41297f1b26bb71
   m_configObjects: {}
