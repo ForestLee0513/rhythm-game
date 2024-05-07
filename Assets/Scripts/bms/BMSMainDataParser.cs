@@ -28,6 +28,12 @@ public class BMSMainDataParser : ChartDecoder
 
     private void ParseMainData(string line)
     {
+        // 메인 데이터 형식 (#001XX:AABBCC)이 아닐경우 파싱 생략
+        if (line == "" || line.IndexOf(" ") > -1)
+        {
+            return;
+        }
+
         string statementDataKey = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(0, line.IndexOf(" ")) : line;
         string statementDataValue = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(" ") + 1) : "";
 
@@ -82,6 +88,37 @@ public class BMSMainDataParser : ChartDecoder
                 if (pattern.bar < bar)
                 {
                     pattern.bar = bar;
+                }
+
+                // 채널
+                string channel = mainDataKey.Substring(3);
+
+                // 채널 02를 제외하고 모두 36진수로 이루어져 있어 채널 여부로 구분
+                if (channel != "02")
+                {
+                    int beatLength = mainDataValue.Length / 2;
+                    for (int i = 0; i < mainDataValue.Length - 1; i += 2)
+                    {
+                        // 키음
+                        int keySound = Decode36(mainDataValue.Substring(i, 2));
+
+                        // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
+                        // 노트 채널 (1: 일반 노트 / 5: 롱노트)
+                        if (channel[0] == '1' || channel[0] == '5')
+                        {
+
+                        }
+                            
+                        // BGM 채널
+                        if (channel == "01")
+                        {
+
+                        }
+                    }
+                }
+                else
+                {
+
                 }
             }
         }

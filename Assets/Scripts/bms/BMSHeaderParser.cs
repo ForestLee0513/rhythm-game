@@ -89,7 +89,7 @@ public class BMSHeaderParser : ChartDecoder
 
             if (headerKey.StartsWith("#WAV"))
             {
-                TrackInfo.audioFileNames.Add(Base36.Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                TrackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
             }
             if (headerKey.StartsWith("#BMP"))
             {
