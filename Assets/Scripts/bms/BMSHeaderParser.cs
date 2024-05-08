@@ -83,7 +83,16 @@ public class BMSHeaderParser : ChartDecoder
                     TrackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
                     break;
                 case "#LNOBJ":
+                    if (!TrackInfo.isLnobj)
+                    {
+                        TrackInfo.isLnobj = true;
+                    }
+
                     TrackInfo.lnobjList.Add(headerValue);
+                    break;
+                case "#LNTYPE":
+                    Int32.TryParse(headerValue, out int lnType);
+                    TrackInfo.lnType = lnType;
                     break;
             }
 
@@ -113,7 +122,6 @@ public class BMSHeaderParser : ChartDecoder
                 }
                 else
                 {
-                    // ���� BPM
                     string[] bpmKeyValuePair = line.Substring(4).Split(" ");
                     string bpmKey = bpmKeyValuePair[0];
                     Single.TryParse(bpmKeyValuePair[1], out float bpmValue);

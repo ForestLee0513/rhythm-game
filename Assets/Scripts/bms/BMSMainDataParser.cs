@@ -97,6 +97,8 @@ public class BMSMainDataParser : ChartDecoder
                 if (channel != "02")
                 {
                     int beatLength = mainDataValue.Length / 2;
+                    int noteLine = channel[1] - '1';
+
                     for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                     {
                         // 키음
@@ -104,15 +106,12 @@ public class BMSMainDataParser : ChartDecoder
 
                         // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
                         // 노트 채널 (1: 일반 노트 / 5: 롱노트)
-                        if (channel[0] == '1' || channel[0] == '5')
+                        if (keySound != 0 && channel[0] == '5')
                         {
 
                         }
-                            
-                        // BGM 채널
-                        if (channel == "01")
+                        else if (keySound != 0 && channel[0] == '1')
                         {
-
                         }
                     }
                 }
