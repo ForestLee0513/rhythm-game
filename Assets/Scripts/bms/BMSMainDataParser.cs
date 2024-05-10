@@ -90,14 +90,17 @@ public class BMSMainDataParser : ChartDecoder
                     pattern.bar = bar;
                 }
 
-                // 채널
                 string channel = mainDataKey.Substring(3);
+                int lane = channel[1] - '1';
+                
+                // LNTYPE 전용 롱노트 시작 / 종료 여부
+                int lastLntypeKeySound = 0;
+                bool isLntypeStarted = false;
 
                 // 채널 02를 제외하고 모두 36진수로 이루어져 있어 채널 여부로 구분
                 if (channel != "02")
                 {
                     int beatLength = mainDataValue.Length / 2;
-                    int noteLine = channel[1] - '1';
 
                     for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                     {
@@ -105,19 +108,45 @@ public class BMSMainDataParser : ChartDecoder
                         int keySound = Decode36(mainDataValue.Substring(i, 2));
 
                         // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
-                        // 노트 채널 (1: 일반 노트 / 5: 롱노트)
-                        if (keySound != 0 && channel[0] == '5')
+                        if (keySound == 0)
                         {
-
+                            return;
                         }
-                        else if (keySound != 0 && channel[0] == '1')
+
+                        // 노트 처리 //
+                        // 롱노트 - LNOBJ 선언 됐을 경우의 처리
+                        if (channel[0] == '1' && TrackInfo.lnobj == keySound)
                         {
+                            // Debug.Log($"{bar}번째 마디의 {lane}번째 롱노트 끝 감지! 키음은 :{keySound}");
+                            return;
+                        }
+                        
+                        // 롱노트 - LNTYPE 명령어 일 경우의 처리
+                        if ((channel[0] == '5' || channel[0] == '6') && lastLntypeKeySound != keySound)
+                        {
+                            lastLntypeKeySound = keySound;
+                            isLntypeStarted = !isLntypeStarted;
+
+                            if (isLntypeStarted == false)
+                            {
+                                // Debug.Log($"{bar}번째 마디의 {lane}번째 롱노트 끝 감지! 키음은 :{keySound}");
+                            }
+                            return;
+                        }
+
+                        // 일반 노트
+                        if (channel[0] == '1')
+                        {
+                            // Debug.Log($"{bar}번째 마디의 {lane}번째 일반노트 키음은 :{keySound}");
                         }
                     }
                 }
                 else
                 {
-
+                    // 변박 //
+                    // 마디 내 박자 수 (1이 4/4 박자임.)
+                    double.TryParse(mainDataValue, out double beatMeter);
+                    Debug.Log($"{bar}번 째 마디의 박자는 {beatMeter}");
                 }
             }
         }
