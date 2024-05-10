@@ -17,8 +17,7 @@ public class TrackInfo : IComparable
     public Dictionary<string, string> imageFileNames = new Dictionary<string, string>();
     public Dictionary<string, float> bpmTable = new Dictionary<string, float>();
     public Dictionary<string, int> stopTable = new Dictionary<string, int>();
-    public List<string> lnobjList = new List<string>();
-    public bool isLnobj = false;
+    public int lnobj = 0;
     public int lnType = 1;
     public int barCount = 0;
 

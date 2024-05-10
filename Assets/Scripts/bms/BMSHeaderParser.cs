@@ -83,12 +83,7 @@ public class BMSHeaderParser : ChartDecoder
                     TrackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
                     break;
                 case "#LNOBJ":
-                    if (!TrackInfo.isLnobj)
-                    {
-                        TrackInfo.isLnobj = true;
-                    }
-
-                    TrackInfo.lnobjList.Add(headerValue);
+                    TrackInfo.lnobj = Decode36(headerValue);
                     break;
                 case "#LNTYPE":
                     Int32.TryParse(headerValue, out int lnType);
