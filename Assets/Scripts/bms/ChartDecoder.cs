@@ -19,6 +19,7 @@ public abstract class ChartDecoder
     public ChartDecoder(TrackInfo trackInfo)
     {
         path = trackInfo.path;
+        this.trackInfo = trackInfo;
     }
 
     public void ReadFile()
