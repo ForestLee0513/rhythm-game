@@ -91,11 +91,13 @@ public class BMSMainDataParser : ChartDecoder
                 }
 
                 string channel = mainDataKey.Substring(3);
-                int lane = channel[1] - '1';
-                
-                // LNTYPE 전용 롱노트 시작 / 종료 여부
-                int lastLntypeKeySound = 0;
+                int lane = channel[1] - '0'; // 2P거나 DP일 경우 8 더해서 둘 다 출력할 수 있도록 수정 예정
+
+
+                // 롱노트 시작 / 종료 여부
                 bool isLntypeStarted = false;
+                int prevLnBar = 0;
+                int prevLnBeat = 0;
 
                 // 채널 02를 제외하고 모두 36진수로 이루어져 있어 채널 여부로 구분
                 if (channel != "02")
@@ -110,34 +112,41 @@ public class BMSMainDataParser : ChartDecoder
                         // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
                         if (keySound == 0)
                         {
-                            return;
+                            continue;
                         }
 
                         // 노트 처리 //
-                        // 롱노트 - LNOBJ 선언 됐을 경우의 처리
-                        if (channel[0] == '1' && TrackInfo.lnobj == keySound)
+                        if (channel[0] == '1' || channel[0] == '2')
                         {
-                            // Debug.Log($"{bar}번째 마디의 {lane}번째 롱노트 끝 감지! 키음은 :{keySound}");
-                            return;
+                            // 롱노트 - LNOBJ 선언 됐을 경우의 처리
+                            if (TrackInfo.lnobj == keySound)
+                            {
+                                Debug.Log($"롱노트 시작지점은 {prevLnBar}번째 마디의 {lane}번 라인 {prevLnBeat} 비트에 있음 / 키음은 이미 리스트에 적용되어 있으니 생략.");
+                                Debug.Log($"롱노트 끝지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은 :{keySound}");
+
+                                continue;
+                            }
+
+                            // 일반 노트
+                            Debug.Log($"{bar}번째 마디의 {lane}번 라인 {i} 비트에 일반노트 키음은 :{keySound}");
+                            prevLnBar = bar;
+                            prevLnBeat = i;
+                            continue;
                         }
                         
-                        // 롱노트 - LNTYPE 명령어 일 경우의 처리
-                        if ((channel[0] == '5' || channel[0] == '6') && lastLntypeKeySound != keySound)
+                        // 롱노트 - LNTYPE 1 명령어 일 경우의 처리
+                        if (TrackInfo.lnType == 1 && (channel[0] == '5' || channel[0] == '6'))
                         {
-                            lastLntypeKeySound = keySound;
-                            isLntypeStarted = !isLntypeStarted;
-
-                            if (isLntypeStarted == false)
+                            if (isLntypeStarted == true)
                             {
-                                // Debug.Log($"{bar}번째 마디의 {lane}번째 롱노트 끝 감지! 키음은 :{keySound}");
+                                Debug.Log($"롱노트 끝지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은 :{keySound}");
+                                isLntypeStarted = false;
+                                continue;
                             }
-                            return;
-                        }
 
-                        // 일반 노트
-                        if (channel[0] == '1')
-                        {
-                            // Debug.Log($"{bar}번째 마디의 {lane}번째 일반노트 키음은 :{keySound}");
+                            Debug.Log($"롱노트 시작지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은: {keySound}");
+                            isLntypeStarted = !isLntypeStarted;
+                            continue;
                         }
                     }
                 }
