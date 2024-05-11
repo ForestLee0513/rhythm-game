@@ -106,6 +106,7 @@ public class BMSMainDataParser : ChartDecoder
 
                     for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                     {
+                        int beat = i;
                         // 키음
                         int keySound = Decode36(mainDataValue.Substring(i, 2));
 
@@ -121,16 +122,13 @@ public class BMSMainDataParser : ChartDecoder
                             // 롱노트 - LNOBJ 선언 됐을 경우의 처리
                             if (TrackInfo.lnobj == keySound)
                             {
-                                Debug.Log($"롱노트 시작지점은 {prevLnBar}번째 마디의 {lane}번 라인 {prevLnBeat} 비트에 있음 / 키음은 이미 리스트에 적용되어 있으니 생략.");
-                                Debug.Log($"롱노트 끝지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은 :{keySound}");
+                                pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.LnEnd);
 
                                 continue;
                             }
 
                             // 일반 노트
-                            Debug.Log($"{bar}번째 마디의 {lane}번 라인 {i} 비트에 일반노트 키음은 :{keySound}");
-                            prevLnBar = bar;
-                            prevLnBeat = i;
+                            pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.Default);
                             continue;
                         }
                         
@@ -139,12 +137,11 @@ public class BMSMainDataParser : ChartDecoder
                         {
                             if (isLntypeStarted == true)
                             {
-                                Debug.Log($"롱노트 끝지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은 :{keySound}");
+                                pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.LnEnd);
                                 isLntypeStarted = false;
                                 continue;
                             }
 
-                            Debug.Log($"롱노트 시작지점은 {bar}번째 마디의 {lane}번 라인 {i}번째 비트에 있음 / 키음은: {keySound}");
                             isLntypeStarted = !isLntypeStarted;
                             continue;
                         }
@@ -154,8 +151,8 @@ public class BMSMainDataParser : ChartDecoder
                 {
                     // 변박 //
                     // 마디 내 박자 수 (1이 4/4 박자임.)
-                    double.TryParse(mainDataValue, out double beatMeter);
-                    Debug.Log($"{bar}번 째 마디의 박자는 {beatMeter}");
+                    Single.TryParse(mainDataValue, out float beatMeasureLength);
+                    pattern.AddBeatMeasureLength(bar, beatMeasureLength);
                 }
             }
         }

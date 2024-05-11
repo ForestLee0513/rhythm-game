@@ -9,7 +9,14 @@ public class InGameManager : MonoBehaviour
     void Start()
     {
         patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
-        Debug.Log(patternData.bar);
+        
+        for (int i = 0; i < patternData.lines.Length; ++i)
+        {
+            foreach (Note note in patternData.lines[i].NoteList)
+            {
+                Debug.Log($"{i}번 째 줄의 {note.Bar} 마디의 {note.Beat}비트 {note.Flag}");
+            }
+        }
     }
 
     // Update is called once per frame
