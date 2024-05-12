@@ -70,6 +70,9 @@ public class BMSHeaderParser : ChartDecoder
                 case "#ARTIST":
                     TrackInfo.artist = headerValue;
                     break;
+                case "#SUBARTIST":
+                    TrackInfo.subArtist = headerValue;
+                    break;
                 case "#PLAYLEVEL":
                     Int32.TryParse(headerValue, out TrackInfo.playLevel);
                     break;
@@ -88,6 +91,9 @@ public class BMSHeaderParser : ChartDecoder
                 case "#LNTYPE":
                     Int32.TryParse(headerValue, out int lnType);
                     TrackInfo.lnType = lnType;
+                    break;
+                case "#SUBTITLE":
+                    TrackInfo.subTitle = headerValue;
                     break;
             }
 

@@ -275,9 +275,9 @@ public class TrackSelectUIManager : MonoBehaviour
                 trackInfoJacketImage.GetComponent<RawImage>().texture = tex;
             }
         }
-        title.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.title;
-        artist.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.artist;
-        level.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.playLevel.ToString();
+        title.GetComponent<TextMeshProUGUI>().text = $"{GameManager.Instance.selectedTrack.title} {GameManager.Instance.selectedTrack.subTitle}";
+        artist.GetComponent<TextMeshProUGUI>().text = $"{GameManager.Instance.selectedTrack.artist} {GameManager.Instance.selectedTrack.subArtist}";
+        level.GetComponent<TextMeshProUGUI>().text = $"{GameManager.Instance.selectedTrack.playLevel}";
         genre.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.genre;
         bpm.GetComponent<TextMeshProUGUI>().text = GameManager.Instance.selectedTrack.bpm.ToString() + bpmRangeResult;
     }

@@ -5,7 +5,9 @@ public class TrackInfo : IComparable
 {
     public string genre = "";
     public string title = "";
+    public string subTitle = "";
     public string artist = "";
+    public string subArtist = "";
     public string path = "";
     public string stageFile = "";
     public float bpm = 0;
