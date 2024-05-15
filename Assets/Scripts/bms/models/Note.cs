@@ -5,13 +5,14 @@ public class Note : BMSObject
         Default,
         LnStart,
         LnEnd,
-        Mine
+        Mine,
+        BGM
     }
 
     public int KeySound { get; private set; }
     public NoteFlagState Flag { get; private set; }
 
-    public Note(int bar, float beat, float beatLength, int keySound, NoteFlagState flag) : base(bar, beat, beatLength)
+    public Note(int bar, double beat, double beatLength, int keySound, NoteFlagState flag) : base(bar, beat, beatLength)
     {
         KeySound = keySound;
         Flag = flag;

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class BMSMainDataParser : ChartDecoder
 {
@@ -91,13 +92,18 @@ public class BMSMainDataParser : ChartDecoder
                 }
 
                 string channel = mainDataKey.Substring(3);
-                int lane = channel[1] - '0'; // 2P거나 DP일 경우 8 더해서 둘 다 출력할 수 있도록 수정 예정
-
+                int lane = channel[1] - '0';
+                // 2P (DP)인 경우 8을 더해서 2P 라인까지 index가 갈 수 있도록 수정
+                // Pattern.cs 참고
+                if (channel[0] == '2' || channel[0] == '6')
+                {
+                    lane += 8;
+                }
 
                 // 롱노트 시작 / 종료 여부
                 bool isLntypeStarted = false;
-                int prevLnBar = 0;
-                int prevLnBeat = 0;
+                // int prevLnBar = 0;
+                // int prevLnBeat = 0;
 
                 // 채널 02를 제외하고 모두 36진수로 이루어져 있어 채널 여부로 구분
                 if (channel != "02")
@@ -107,11 +113,11 @@ public class BMSMainDataParser : ChartDecoder
                     for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                     {
                         int beat = i;
-                        // 키음
-                        int keySound = Decode36(mainDataValue.Substring(i, 2));
+                        // Value - 36진수에서 10진수로 파싱된 값
+                        int parsedToIntValue = Decode36(mainDataValue.Substring(i, 2));
 
                         // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
-                        if (keySound == 0)
+                        if (parsedToIntValue == 0)
                         {
                             continue;
                         }
@@ -120,15 +126,14 @@ public class BMSMainDataParser : ChartDecoder
                         if (channel[0] == '1' || channel[0] == '2')
                         {
                             // 롱노트 - LNOBJ 선언 됐을 경우의 처리
-                            if (TrackInfo.lnobj == keySound)
+                            if (TrackInfo.lnobj == parsedToIntValue)
                             {
-                                pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.LnEnd);
-
+                                pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
                                 continue;
                             }
 
                             // 일반 노트
-                            pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.Default);
+                            pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.Default);
                             continue;
                         }
                         
@@ -137,12 +142,47 @@ public class BMSMainDataParser : ChartDecoder
                         {
                             if (isLntypeStarted == true)
                             {
-                                pattern.AddNote(lane, bar, beat, beatLength, keySound, Note.NoteFlagState.LnEnd);
+                                pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
                                 isLntypeStarted = false;
                                 continue;
                             }
 
                             isLntypeStarted = !isLntypeStarted;
+                            continue;
+                        }
+
+                        // BGM CHANNEL //
+                        if (channel == "01")
+                        {
+                            pattern.AddBGMKeySound(bar, beat, beatLength, parsedToIntValue);
+                            continue;
+                        }
+
+                        // BPM CHANNEL //
+                        if (channel == "03")
+                        {
+                            pattern.AddBPMTable(bar, beat, beatLength, parsedToIntValue);
+                            continue;
+                        }
+
+                        // BGA SEQUENCE //
+                        if (channel == "04")
+                        {
+
+                            continue;
+                        }
+
+                        // BPM CHANNEL 이전 BPM추가 //
+                        if (channel == "08")
+                        {
+                            pattern.AddBPMTable(bar, beat, beatLength, TrackInfo.bpmTable[parsedToIntValue]);
+                            continue;
+                        }
+
+                        // STOP GIMMIK Table //
+                        if (channel == "09")
+                        {
+                            pattern.AddStop(bar, beat, beatLength, TrackInfo.stopTable[parsedToIntValue]);
                             continue;
                         }
                     }
@@ -151,7 +191,7 @@ public class BMSMainDataParser : ChartDecoder
                 {
                     // 변박 //
                     // 마디 내 박자 수 (1이 4/4 박자임.)
-                    Single.TryParse(mainDataValue, out float beatMeasureLength);
+                    Double.TryParse(mainDataValue, out double beatMeasureLength);
                     pattern.AddBeatMeasureLength(bar, beatMeasureLength);
                 }
             }

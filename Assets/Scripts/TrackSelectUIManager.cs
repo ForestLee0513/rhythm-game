@@ -233,7 +233,7 @@ public class TrackSelectUIManager : MonoBehaviour
         }
 
         // bpm ���� ����� ���� �ܼ� ���� ���� ���Ͽ��� ������
-        float[] bpmRangeToArr = GameManager.Instance.selectedTrack.bpmTable.Values.ToArray();
+        double[] bpmRangeToArr = GameManager.Instance.selectedTrack.bpmTable.Values.ToArray();
         string bpmRangeResult = "";
         if (bpmRangeToArr.Length > 0)
         {

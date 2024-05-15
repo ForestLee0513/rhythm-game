@@ -80,7 +80,7 @@ public class BMSHeaderParser : ChartDecoder
                     Int32.TryParse(headerValue, out TrackInfo.rank);
                     break;
                 case "#TOTAL":
-                    Single.TryParse(headerValue, out TrackInfo.total);
+                    Double.TryParse(headerValue, out TrackInfo.total);
                     break;
                 case "#STAGEFILE":
                     TrackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
@@ -103,14 +103,14 @@ public class BMSHeaderParser : ChartDecoder
             }
             if (headerKey.StartsWith("#BMP"))
             {
-                TrackInfo.imageFileNames.Add(headerKey.Substring(4), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
+                TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, System.Web.HttpUtility.UrlEncode(Path.GetFileNameWithoutExtension(headerValue))));
             }
 
             // STOP //
             if (headerKey.StartsWith("#STOP"))
             {
                 Int32.TryParse(headerValue, out int stop);
-                TrackInfo.stopTable.Add(headerKey.Substring(5), stop);
+                TrackInfo.stopTable.Add(Decode36(headerKey.Substring(5)), stop);
             }
 
             // BPM //
@@ -118,16 +118,15 @@ public class BMSHeaderParser : ChartDecoder
             {
                 if (line[4] == ' ')
                 {
-                    // �Ϲ� BPM
-                    float.TryParse(headerValue, out TrackInfo.bpm);
+                    double.TryParse(headerValue, out TrackInfo.bpm);
                 }
                 else
                 {
                     string[] bpmKeyValuePair = line.Substring(4).Split(" ");
                     string bpmKey = bpmKeyValuePair[0];
-                    Single.TryParse(bpmKeyValuePair[1], out float bpmValue);
+                    Double.TryParse(bpmKeyValuePair[1], out double bpmValue);
 
-                    TrackInfo.bpmTable.Add(bpmKey, bpmValue);
+                    TrackInfo.bpmTable.Add(Decode36(bpmKey), bpmValue);
                 }
             }
         }
