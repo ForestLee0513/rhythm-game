@@ -1,5 +1,13 @@
 using System.Collections.Generic;
-using UnityEditor;
+
+public enum PatternLaneType
+{
+    Default,
+	bpmList,
+	bgmKeySoundChannel,
+	stopList,
+	bgaSequenceFrameList,
+}
 
 public class Pattern
 {

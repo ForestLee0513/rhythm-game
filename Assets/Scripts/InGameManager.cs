@@ -1,33 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class InGameManager : MonoBehaviour
 {
-    Pattern patternData = null;
+    public Pattern patternData = null;
+    private static InGameManager instance;
+    public static InGameManager Instance { get { return instance; } }
 
-    void Start()
+    private void Awake()
     {
-        patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
-        
-        // for (int i = 0; i < patternData.lines.Length; ++i)
-        // {
-        //     foreach (Note note in patternData.lines[i].NoteList)
-        //     {
-        //         Debug.Log($"{i}번 째 줄의 {note.Bar} 마디의 {note.Beat}비트 {note.Flag}");
-        //     }
-        // }
-
-        foreach (Note keySound in patternData.bgmKeySoundChannel)
+        if (instance == null)
         {
-            Debug.Log($"{keySound.Bar} 마디의 {keySound.Beat} 박자에 있는 키음은 {keySound.KeySound}");
+            instance = this;
         }
-    
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // 개발 환경인 경우에는 로컬에 있는 임의의 파일로 지정함. - 개인 PC에 있는 L9라는 곡의 5B 패턴으로 적용
+        #if UNITY_EDITOR
+        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/slic_hertz/_slic_hertz_d3.bme"));
+        patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
+        #elif UNITY_STANDALONE
+        patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
+        currentBPM = GameManager.Instance.selectedTrack.TrackInfo.bpm;
+        #endif
     }
 }

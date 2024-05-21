@@ -125,8 +125,6 @@ public class BMSMainDataParser : ChartDecoder
                         // 노트 처리 //
                         if (channel[0] == '1' || channel[0] == '2')
                         {
-
-                            Debug.Log(lane);
                             // 롱노트 - LNOBJ 선언 됐을 경우의 처리
                             if (TrackInfo.lnobj == parsedToIntValue)
                             {
