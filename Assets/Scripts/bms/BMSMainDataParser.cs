@@ -93,11 +93,11 @@ public class BMSMainDataParser : ChartDecoder
 
                 string channel = mainDataKey.Substring(3);
                 int lane = (channel[1] - '0') - 1;
-                // 2P (DP)인 경우 8을 더해서 2P 라인까지 index가 갈 수 있도록 수정
+                // 2P (DP)인 경우 9를 더해서 2P 라인까지 index가 갈 수 있도록 수정
                 // Pattern.cs 참고
                 if (channel[0] == '2' || channel[0] == '6')
                 {
-                    lane += 8;
+                    lane += 9;
                 }
 
                 // 롱노트 시작 / 종료 여부
@@ -125,6 +125,8 @@ public class BMSMainDataParser : ChartDecoder
                         // 노트 처리 //
                         if (channel[0] == '1' || channel[0] == '2')
                         {
+
+                            Debug.Log(lane);
                             // 롱노트 - LNOBJ 선언 됐을 경우의 처리
                             if (TrackInfo.lnobj == parsedToIntValue)
                             {

@@ -9,7 +9,7 @@ public class Pattern
     public List<Note> bgmKeySoundChannel = new List<Note>();
     public List<Stop> stopList = new List<Stop>();
     public List<BGASequence> bgaSequenceFrameList = new List<BGASequence>();
-    public Line[] lines = new Line[16]; // DP(1P + 2P)대응을 위해 8 + 8 형식으로 대응. (원래는 총 18개로 구성해야 하지만 페달은 미지원 하므로 16개 까지만 대응)
+    public Line[] lines = new Line[18]; // DP(1P + 2P)대응을 위해 9 + 9 형식으로 대응. (17번은 페달이지만 미대응.)
 
     public Pattern()
     {
