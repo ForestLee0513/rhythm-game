@@ -511,6 +511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a628789bc5ec40c38b8b8d8c68a5060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  laneType: 0
+  laneIndex: 0
 --- !u!4 &1084573354
 Transform:
   m_ObjectHideFlags: 0
