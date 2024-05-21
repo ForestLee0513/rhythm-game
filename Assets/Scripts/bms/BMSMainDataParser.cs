@@ -92,7 +92,7 @@ public class BMSMainDataParser : ChartDecoder
                 }
 
                 string channel = mainDataKey.Substring(3);
-                int lane = channel[1] - '0';
+                int lane = (channel[1] - '0') - 1;
                 // 2P (DP)인 경우 8을 더해서 2P 라인까지 index가 갈 수 있도록 수정
                 // Pattern.cs 참고
                 if (channel[0] == '2' || channel[0] == '6')
