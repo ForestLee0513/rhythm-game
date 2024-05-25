@@ -513,6 +513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   laneType: 0
   laneIndex: 0
+  notePrefab: {fileID: 4707888711049166102, guid: b2a266782a0504716a7e2802ff8e26d2, type: 3}
 --- !u!4 &1084573354
 Transform:
   m_ObjectHideFlags: 0
@@ -522,7 +523,7 @@ Transform:
   m_GameObject: {fileID: 1084573352}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -75.89245, y: 186.24924, z: -24.714901}
+  m_LocalPosition: {x: -67, y: -300, z: -24.714901}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

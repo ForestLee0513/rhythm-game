@@ -1,35 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class TrackInfo : IComparable
+namespace BMS
 {
-    public string genre = "";
-    public string title = "";
-    public string subTitle = "";
-    public string artist = "";
-    public string subArtist = "";
-    public string path = "";
-    public string stageFile = "";
-    public double bpm = 0;
-    public double total = 0;
-    public int playerType = 0;
-    public int playLevel = 0;
-    public int rank = 0;
-    public Dictionary<int, string> audioFileNames = new Dictionary<int, string>();
-    public Dictionary<int, string> imageFileNames = new Dictionary<int, string>(); 
-    public Dictionary<int, double> bpmTable = new Dictionary<int, double>();
-    public Dictionary<int, int> stopTable = new Dictionary<int, int>();
-    public int lnobj = 0;
-    public int lnType = 1;
-    public int barCount = 0;
-
-    public int CompareTo(object trackInfo)
+    public class TrackInfo : IComparable
     {
-        if (playLevel > (trackInfo as TrackInfo).playLevel)
-            return 1;
-        else if (playLevel == (trackInfo as TrackInfo).playLevel)
-            return 0;
-        else
-            return -1;
+        public string genre = "";
+        public string title = "";
+        public string subTitle = "";
+        public string artist = "";
+        public string subArtist = "";
+        public string path = "";
+        public string stageFile = "";
+        public double bpm = 0;
+        public double total = 0;
+        public int playerType = 0;
+        public int playLevel = 0;
+        public int rank = 0;
+        public Dictionary<int, string> audioFileNames = new Dictionary<int, string>();
+        public Dictionary<int, string> imageFileNames = new Dictionary<int, string>(); 
+        public Dictionary<int, double> bpmTable = new Dictionary<int, double>();
+        public Dictionary<int, int> stopTable = new Dictionary<int, int>();
+        public int lnobj = 0;
+        public int lnType = 1;
+        public int barCount = 0;
+
+        public int CompareTo(object trackInfo)
+        {
+            if (playLevel > (trackInfo as TrackInfo).playLevel)
+                return 1;
+            else if (playLevel == (trackInfo as TrackInfo).playLevel)
+                return 0;
+            else
+                return -1;
+        }
     }
 }

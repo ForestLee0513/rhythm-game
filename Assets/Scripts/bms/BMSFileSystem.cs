@@ -10,84 +10,87 @@ using UnityEngine;
 // BMS의 파일을 관리하는 클래스입니다.
 // 유니티의 MonoBehaviour에 의존하지 않으며 대상 폴더 지정과 파일을 불러와서 헤더 정보를 딕셔너리 형태로 저장하는 역할만 합니다.
 
-public class BMSFileSystem
+namespace  BMS
 {
-    private Dictionary<string, List<TrackInfo>> trackInfoList = new Dictionary<string, List<TrackInfo>>();
-    private Dictionary<string, Dictionary<string, List<TrackInfo>>> directoryCache = new Dictionary<string, Dictionary<string, List<TrackInfo>>>();
-    private List<string> rootPaths = new List<string>();
-
-    public BMSFileSystem()
+    public class BMSFileSystem
     {
-        // 지금은 카운터 없으면 임의로 지정하지만 json으로 rootPath를 저장할 수 있게 된다면 에러 반환 예정.
-        if (rootPaths.Count <= 0)
+        private Dictionary<string, List<TrackInfo>> trackInfoList = new Dictionary<string, List<TrackInfo>>();
+        private Dictionary<string, Dictionary<string, List<TrackInfo>>> directoryCache = new Dictionary<string, Dictionary<string, List<TrackInfo>>>();
+        private List<string> rootPaths = new List<string>();
+
+        public BMSFileSystem()
         {
-            rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
-            rootPaths.Add("C:/bmsFiles");
-            rootPaths.Add("C:/testBmsFile");
+            // 지금은 카운터 없으면 임의로 지정하지만 json으로 rootPath를 저장할 수 있게 된다면 에러 반환 예정.
+            if (rootPaths.Count <= 0)
+            {
+                rootPaths.Add(@$"{Application.dataPath}/bmsFiles");
+                rootPaths.Add("C:/bmsFiles");
+                rootPaths.Add("C:/testBmsFile");
+            }
         }
-    }
-    
-    public List<string> GetRootPaths()
-    {
-        return rootPaths;
-    }
-
-    // 이 과정에서 여기에 json 저장 예정.
-    public void AddRootPaths(string path)
-    {
-        rootPaths.Add(path);
-    }
-
-    public Dictionary<string, List<TrackInfo>> ImportFiles(int index)
-    {
-        // 경로가 없을 경우 null 반환
-        if (!Directory.Exists(rootPaths[index]))
+        
+        public List<string> GetRootPaths()
         {
-            return null;
+            return rootPaths;
         }
 
-        // 디렉터리 캐시가 있을 경우 캐시 결과값 출력
-        if (directoryCache.ContainsKey(rootPaths[index]))
+        // 이 과정에서 여기에 json 저장 예정.
+        public void AddRootPaths(string path)
         {
+            rootPaths.Add(path);
+        }
+
+        public Dictionary<string, List<TrackInfo>> ImportFiles(int index)
+        {
+            // 경로가 없을 경우 null 반환
+            if (!Directory.Exists(rootPaths[index]))
+            {
+                return null;
+            }
+
+            // 디렉터리 캐시가 있을 경우 캐시 결과값 출력
+            if (directoryCache.ContainsKey(rootPaths[index]))
+            {
+                return directoryCache[rootPaths[index]];
+            }
+
+            // load all bms files..
+            List<string> extensions = new List<string> { "bms", "bme", "bml", "pms" };
+            
+            IEnumerable<string> bmsFilePaths = Directory
+                .EnumerateFiles(rootPaths[index], "*.*", SearchOption.AllDirectories)
+                .Where(s => extensions.Contains(Path.GetExtension(s).TrimStart(".").ToLowerInvariant()));
+
+            foreach (string bmsFilePath in bmsFilePaths)
+            {
+                ReadFile(bmsFilePath);
+            }
+
+            // 정렬
+            foreach (string trackInfoKey in trackInfoList.Keys) 
+            {
+                trackInfoList[trackInfoKey].Sort();
+            }
+
+            directoryCache.Add(rootPaths[index], trackInfoList);
+            trackInfoList = new Dictionary<string, List<TrackInfo>>();
+
             return directoryCache[rootPaths[index]];
         }
 
-        // load all bms files..
-        List<string> extensions = new List<string> { "bms", "bme", "bml", "pms" };
-        
-        IEnumerable<string> bmsFilePaths = Directory
-            .EnumerateFiles(rootPaths[index], "*.*", SearchOption.AllDirectories)
-            .Where(s => extensions.Contains(Path.GetExtension(s).TrimStart(".").ToLowerInvariant()));
-
-        foreach (string bmsFilePath in bmsFilePaths)
+        private void ReadFile(string path)
         {
-            ReadFile(bmsFilePath);
-        }
+            BMSHeaderParser parser = new BMSHeaderParser(path);
 
-        // 정렬
-        foreach (string trackInfoKey in trackInfoList.Keys) 
-        {
-            trackInfoList[trackInfoKey].Sort();
-        }
-
-        directoryCache.Add(rootPaths[index], trackInfoList);
-        trackInfoList = new Dictionary<string, List<TrackInfo>>();
-
-        return directoryCache[rootPaths[index]];
-    }
-
-    private void ReadFile(string path)
-    {
-        BMSHeaderParser parser = new BMSHeaderParser(path);
-
-        if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
-        {
-            trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
-        }
-        else 
-        {
-            trackInfoList.Add(Directory.GetParent(path).Name, new List<TrackInfo>());
-            trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
+            if (trackInfoList.ContainsKey(Directory.GetParent(path).Name))
+            {
+                trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
+            }
+            else 
+            {
+                trackInfoList.Add(Directory.GetParent(path).Name, new List<TrackInfo>());
+                trackInfoList[Directory.GetParent(path).Name].Add(parser.TrackInfo);
+            }
         }
     }
 }

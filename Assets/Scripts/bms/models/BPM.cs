@@ -1,8 +1,11 @@
-public class BPM : BMSObject
+namespace BMS
 {
-    public double Bpm { get; private set; }
-    public BPM(int bar, double beat, double beatLength, double bpm) : base(bar, beat, beatLength)
+    public class BPM : BMSObject
     {
-        Bpm = bpm;
+        public double Bpm { get; private set; }
+        public BPM(int bar, double beat, double beatLength, double bpm) : base(bar, beat, beatLength)
+        {
+            Bpm = bpm;
+        }
     }
 }

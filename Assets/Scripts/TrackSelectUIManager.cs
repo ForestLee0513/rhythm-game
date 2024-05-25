@@ -9,7 +9,6 @@ using UnityEngine.UI;
 using B83.Image.BMP;
 using static GameManager;
 
-
 public class TrackSelectUIManager : MonoBehaviour
 {
     #region Singleton 

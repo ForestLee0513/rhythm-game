@@ -1,8 +1,11 @@
-public class Stop : BMSObject
+namespace BMS
 {
-    public double Key { get; private set; }
-    public Stop(int bar, double beat, double beatLength, double stop) : base(bar, beat, beatLength)
+    public class Stop : BMSObject
     {
-        Key = stop;
+        public double Key { get; private set; }
+        public Stop(int bar, double beat, double beatLength, double stop) : base(bar, beat, beatLength)
+        {
+            Key = stop;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Lane : MonoBehaviour
 {
@@ -9,19 +10,31 @@ public class Lane : MonoBehaviour
     
     [Header("출력 할 라인")]
     [SerializeField]
-    private PatternLaneType laneType;
+    private BMS.PatternLaneType laneType;
     // 일반노트 인 경우에만 index로 접근 시도
     [SerializeField]
     private int laneIndex;
+    [Header("노트 에셋")]
+    [SerializeField]
+    private Note notePrefab;
+    private Dictionary<int, List<Note>> noteMap = new();
 
     void Start()
     {
-        if (laneType == PatternLaneType.Default)
+        if (laneType == BMS.PatternLaneType.Default)
         {
             foreach (var note in InGameManager.Instance.patternData.lines[laneIndex].NoteList)
             {
-                int bar = note.Bar + 1;
-                // Debug.Log($"{laneIndex}번째 마디의 {note.Beat}박자 {note.KeySound}");
+                int bar = note.Bar;
+                Vector3 notePos = new Vector3(0, (float)note.Beat + 540);
+
+                if (!noteMap.ContainsKey(bar))
+                {
+                    noteMap.Add(bar, new List<Note>());
+                }
+                else
+                {
+                }
             }
         }
         else
