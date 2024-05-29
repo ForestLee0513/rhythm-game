@@ -26,15 +26,8 @@ public class Lane : MonoBehaviour
             foreach (var note in InGameManager.Instance.patternData.lines[laneIndex].NoteList)
             {
                 int bar = note.Bar;
-                Vector3 notePos = new Vector3(0, (float)note.Beat + 540);
+                Vector3 notePos = new Vector3(0, (float)note.Beat);
 
-                if (!noteMap.ContainsKey(bar))
-                {
-                    noteMap.Add(bar, new List<Note>());
-                }
-                else
-                {
-                }
             }
         }
         else
