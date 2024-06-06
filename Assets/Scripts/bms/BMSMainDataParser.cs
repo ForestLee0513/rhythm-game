@@ -21,12 +21,14 @@ namespace BMS
         {
             parseData += ParseMainData;
             ReadFile();
+            CalculateTiming();
         }
 
         public BMSMainDataParser(TrackInfo trackInfo): base(trackInfo)
         {
             parseData += ParseMainData;
             ReadFile();
+            CalculateTiming();
         }
 
         private void ParseMainData(string line)
@@ -198,6 +200,11 @@ namespace BMS
                     }
                 }
             }
+        }
+
+        private void CalculateTiming()
+        {
+            
         }
     }
 }

@@ -24,7 +24,7 @@ namespace BMS
 	{
 		public int Bar { get; protected set; }
 		public double Beat { get; protected set; }
-		// public double Timing { get; set; }
+		public double Timing { get; set; } 
 
 		public BMSObject(int bar, double beat, double beatLength)
 		{
