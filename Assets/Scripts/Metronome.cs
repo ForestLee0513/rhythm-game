@@ -7,12 +7,14 @@ public class Metronome : MonoBehaviour
 {
     public static Metronome Instance { get; private set; }
     public double Bpm { get; private set; }
-    public double BarInterval { get; private set; }
+    public double BeatInterval { get; private set; }
+    private double beatPerBar;
     public double NormalizedTime { get; private set; }
     public int BarCount { get; private set; }
     public double Beat { get; private set; }
-    private double nextMeasureTime;
-    private double measureStartTime;
+    private double lastBeat;
+    private double nextBeatTime;
+    private double beatStartTime;
     // private double lastBpm;
     private int totalBarCount;
     private double lastBpm;
@@ -37,9 +39,10 @@ public class Metronome : MonoBehaviour
             Instance = this;
         }
 
-        BarInterval = Beat * 60_000.0f / Bpm;
-        measureStartTime = Time.time * 1000;
-        nextMeasureTime = measureStartTime + BarInterval;
+        BeatInterval = Beat * 60_000.0f / Bpm;
+        beatStartTime = Time.time * 1000;
+        nextBeatTime = beatStartTime + BeatInterval;
+        beatPerBar = Beat * 4;
 
         // 테스트용 메트로놈 Tick SFX 로드 처리
         // Assets/Audio/SFX/Metronome/tick.mp3 파일이 존재하는 경우에만 로드
@@ -68,23 +71,27 @@ public class Metronome : MonoBehaviour
 
         double currentTime = Time.time * 1000;
 
-        if (Bpm != lastBpm)
+        if (Bpm != lastBpm || Beat != lastBeat)
         {
-            BarInterval = Beat * 60_000.0f / Bpm;
-            measureStartTime = Time.time * 1000;
-            nextMeasureTime = measureStartTime + BarInterval;
+            BeatInterval = Beat * 60_000.0f / Bpm;
+            beatStartTime = Time.time * 1000;
+            nextBeatTime = beatStartTime + BeatInterval;
+            beatPerBar = Beat * 4;
             lastBpm = Bpm;
+            lastBeat = Beat;
         }
 
-        if (currentTime >= nextMeasureTime)
+        if (currentTime >= nextBeatTime)
         {
             PlaySound(0);
-            measureStartTime = nextMeasureTime;
-            nextMeasureTime += BarInterval;
-            BarCount++;
+            beatStartTime = nextBeatTime;
+            nextBeatTime += BeatInterval;
         }
-
-        NormalizedTime = (currentTime - measureStartTime) / BarInterval;
+        
+        BarCount = (int)(currentTime / (BeatInterval * beatPerBar)) + 1;
+        NormalizedTime = currentTime - beatStartTime;
+        
+        Debug.Log($"현재 마디는 {BarCount} 마디 별 소요 시간은 {NormalizedTime} 입니다. 현재 비트 간격은 {beatPerBar} 총 시간은 {currentTime}");
     }
 
     public void SetBpm(double newBpm)
