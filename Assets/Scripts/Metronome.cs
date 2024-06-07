@@ -90,8 +90,6 @@ public class Metronome : MonoBehaviour
         
         BarCount = (int)(currentTime / (BeatInterval * beatPerBar)) + 1;
         NormalizedTime = currentTime - beatStartTime;
-        
-        Debug.Log($"현재 마디는 {BarCount} 마디 별 소요 시간은 {NormalizedTime} 입니다. 현재 비트 간격은 {beatPerBar} 총 시간은 {currentTime}");
     }
 
     public void SetBpm(double newBpm)

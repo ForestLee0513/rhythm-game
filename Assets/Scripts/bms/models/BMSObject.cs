@@ -40,9 +40,14 @@ namespace BMS
 
 		public int CompareTo(BMSObject other)
 		{
-			if (Beat < other.Beat) return 1;
-			if (Beat == other.Beat) return 0;
-			return -1;
+			if (Bar != other.Bar)
+			{
+				return Bar.CompareTo(other.Bar);
+			}
+			else
+			{
+				return Beat.CompareTo(other.Beat);
+			}
 		}
 	}
 }

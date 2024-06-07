@@ -69,5 +69,18 @@ namespace BMS
             
             lines[line].NoteList.Add(new Note(bar, beat, beatLength, keySound, flag));
         }
+
+        public void SortObjects()
+        {
+            bpmList.Sort();
+            bgmKeySoundChannel.Sort();
+            stopList.Sort();
+            bgaSequenceFrameList.Sort();
+            foreach (Line line in lines)
+            {
+                line.NoteList.Sort();
+                line.LandMineList.Sort();
+            }
+        }
     }
 }

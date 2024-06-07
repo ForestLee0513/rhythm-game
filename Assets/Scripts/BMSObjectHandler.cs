@@ -27,9 +27,9 @@ public class BMSObjectHandler : MonoBehaviour
 
     void Update()
     {
-        // if (bgmQueue[Metronome.Instance.BarCount] != null)
-        // {
-        //     Debug.Log(Metronome.Instance.BeatInterval);
-        // }
+        if (bgmQueue[Metronome.Instance.BarCount] != null)
+        {
+            // Debug.Log("Bar: " + Metronome.Instance.BarCount + " / " + bgmQueue[Metronome.Instance.BarCount].Count);
+        }
     }
 }

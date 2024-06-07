@@ -21,14 +21,16 @@ namespace BMS
         {
             parseData += ParseMainData;
             ReadFile();
-            CalculateTiming();
+            // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
+            pattern.SortObjects();
         }
 
         public BMSMainDataParser(TrackInfo trackInfo): base(trackInfo)
         {
             parseData += ParseMainData;
             ReadFile();
-            CalculateTiming();
+            // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
+            pattern.SortObjects();
         }
 
         private void ParseMainData(string line)
@@ -114,11 +116,14 @@ namespace BMS
                     {
                         int beatLength = mainDataValue.Length / 2;
 
+                        Debug.Log(beatLength);
+
                         for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                         {
                             int beat = i;
                             // Value - 36진수에서 10진수로 파싱된 값
                             int parsedToIntValue = Decode36(mainDataValue.Substring(i, 2));
+                            // Debug.Log($"{bar} 마디의 {beat}비트");
 
                             // 키음이 00이 아닐때만 노트, BGA 등 에셋 배치
                             if (parsedToIntValue == 0)
@@ -200,11 +205,6 @@ namespace BMS
                     }
                 }
             }
-        }
-
-        private void CalculateTiming()
-        {
-            
         }
     }
 }
