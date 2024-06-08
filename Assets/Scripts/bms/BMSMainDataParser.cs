@@ -23,6 +23,7 @@ namespace BMS
             ReadFile();
             // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
             pattern.SortObjects();
+            pattern.CalculateTiming(TrackInfo.bpm);
         }
 
         public BMSMainDataParser(TrackInfo trackInfo): base(trackInfo)
@@ -31,6 +32,7 @@ namespace BMS
             ReadFile();
             // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
             pattern.SortObjects();
+            pattern.CalculateTiming(TrackInfo.bpm);
         }
 
         private void ParseMainData(string line)
@@ -90,11 +92,11 @@ namespace BMS
                 if (mainDataKey != "" && mainDataValue != "")
                 {
                     // 마디
-                    Int32.TryParse(mainDataKey.Substring(0, 3), out int bar);
+                    Int32.TryParse(mainDataKey.Substring(0, 3), out int currentBar);
                     
-                    if (pattern.bar < bar)
+                    if (pattern.totalBarCount < currentBar)
                     {
-                        pattern.bar = bar;
+                        pattern.totalBarCount = currentBar;
                     }
 
                     string channel = mainDataKey.Substring(3);
@@ -116,11 +118,9 @@ namespace BMS
                     {
                         int beatLength = mainDataValue.Length / 2;
 
-                        Debug.Log(beatLength);
-
                         for (int i = 0; i < mainDataValue.Length - 1; i += 2)
                         {
-                            int beat = i;
+                            int beat = i / 2;
                             // Value - 36진수에서 10진수로 파싱된 값
                             int parsedToIntValue = Decode36(mainDataValue.Substring(i, 2));
                             // Debug.Log($"{bar} 마디의 {beat}비트");
@@ -137,12 +137,12 @@ namespace BMS
                                 // 롱노트 - LNOBJ 선언 됐을 경우의 처리
                                 if (TrackInfo.lnobj == parsedToIntValue)
                                 {
-                                    pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
+                                    pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
                                     continue;
                                 }
 
                                 // 일반 노트
-                                pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.Default);
+                                pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.Default);
                                 continue;
                             }
                             
@@ -151,7 +151,7 @@ namespace BMS
                             {
                                 if (isLntypeStarted == true)
                                 {
-                                    pattern.AddNote(lane, bar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
+                                    pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnEnd);
                                     isLntypeStarted = false;
                                     continue;
                                 }
@@ -163,14 +163,14 @@ namespace BMS
                             // BGM CHANNEL //
                             if (channel == "01")
                             {
-                                pattern.AddBGMKeySound(bar, beat, beatLength, parsedToIntValue);
+                                pattern.AddBGMKeySound(currentBar, beat, beatLength, parsedToIntValue);
                                 continue;
                             }
 
                             // BPM CHANNEL //
                             if (channel == "03")
                             {
-                                pattern.AddBPMTable(bar, beat, beatLength, parsedToIntValue);
+                                pattern.AddBPMTable(currentBar, beat, beatLength, parsedToIntValue);
                                 continue;
                             }
 
@@ -184,14 +184,14 @@ namespace BMS
                             // BPM CHANNEL 이전 BPM추가 //
                             if (channel == "08")
                             {
-                                pattern.AddBPMTable(bar, beat, beatLength, TrackInfo.bpmTable[parsedToIntValue]);
+                                pattern.AddBPMTable(currentBar, beat, beatLength, TrackInfo.bpmTable[parsedToIntValue]);
                                 continue;
                             }
 
                             // STOP GIMMIK Table //
                             if (channel == "09")
                             {
-                                pattern.AddStop(bar, beat, beatLength, TrackInfo.stopTable[parsedToIntValue]);
+                                pattern.AddStop(currentBar, beat, beatLength, TrackInfo.stopTable[parsedToIntValue]);
                                 continue;
                             }
                         }
@@ -201,7 +201,7 @@ namespace BMS
                         // 변박 //
                         // 마디 내 박자 수 (1이 4/4 박자임.)
                         Double.TryParse(mainDataValue, out double beatMeasureLength);
-                        pattern.AddBeatMeasureLength(bar, beatMeasureLength);
+                        pattern.AddBeatMeasureLength(currentBar, beatMeasureLength);
                     }
                 }
             }

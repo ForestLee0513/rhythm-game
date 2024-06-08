@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using Unity.VisualScripting;
 
 namespace BMS
 {
@@ -13,7 +15,7 @@ namespace BMS
 
     public class Pattern
     {
-        public int bar = default;
+        public int totalBarCount = default;
         public Dictionary<int, double> beatMeasureLengthTable = new Dictionary<int, double>();
         public List<BPM> bpmList = new List<BPM>();
         public List<Note> bgmKeySoundChannel = new List<Note>();
@@ -80,6 +82,77 @@ namespace BMS
             {
                 line.NoteList.Sort();
                 line.LandMineList.Sort();
+            }
+        }
+
+        public void CalculateTiming(double initBpm)
+        {
+            double currentTime = 0.0;
+            double currentBPM = initBpm; // 기본 BPM
+            double currentBeatMeasureLength = 4; // 변박을 하고싶다면 n * 4를 처리하면 됨. 예를들어 3비트면 0.75 * 4 = 3 임.
+
+            for (int currentBar = 0; currentBar < totalBarCount; ++currentBar)
+            {
+                if (beatMeasureLengthTable.ContainsKey(currentBar))
+                {
+                    currentBeatMeasureLength = beatMeasureLengthTable[currentBar] * 4;
+                }
+
+                foreach (BPM bpmObject in bpmList)
+                {
+                    if (bpmObject.Bar == currentBar)
+                    {
+                        double beatPosition = bpmObject.Beat * currentBeatMeasureLength;
+                        double duration = beatPosition * (60000.0 / currentBPM);
+                        currentTime += duration;
+                        currentBPM = bpmObject.Bpm;
+                    }
+                }
+                
+                for (int noteIndex = 0; noteIndex < lines.Length; ++noteIndex)
+                {
+                    foreach (Note note in lines[noteIndex].NoteList)
+                    {
+                        if (note.Bar == currentBar)
+                        {
+                            double beatPosition = note.Beat * currentBeatMeasureLength;
+                            double duration = beatPosition * (60000.0 / currentBPM);
+                            note.Timing = currentTime + duration;
+                        }
+                    }
+                }
+
+                foreach (Stop stopObject in stopList)
+                {
+                    if (stopObject.Bar == currentBar)
+                    {
+                        double beatPosition = stopObject.Beat * currentBeatMeasureLength;
+                        double duration = beatPosition * (60000.0 / currentBPM);
+                        currentTime += duration;
+                    }
+                }
+
+                foreach (BGASequence bgaSequence in bgaSequenceFrameList)
+                {
+                    if (bgaSequence.Bar == currentBar)
+                    {
+                        double beatPosition = bgaSequence.Beat * currentBeatMeasureLength;
+                        double duration = beatPosition * (60000.0 / currentBPM);
+                        currentTime += duration;
+                    }
+                }
+
+                foreach (Note bgm in bgmKeySoundChannel)
+                {
+                    if (bgm.Bar == currentBar)
+                    {
+                        double beatPosition = bgm.Beat * currentBeatMeasureLength;
+                        double duration = beatPosition * (60000.0 / currentBPM);
+                        bgm.Timing = currentTime + duration;
+                    }
+                }
+
+                currentTime += currentBeatMeasureLength * (60000.0 / currentBPM);
             }
         }
     }

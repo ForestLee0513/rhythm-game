@@ -27,6 +27,7 @@ public class InGameManager : MonoBehaviour
         // 개발 환경인 경우에는 로컬에 있는 임의의 파일로 지정함.
         #if UNITY_EDITOR
         BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Merry Christmas Mr. (by sasakure.UK)/Merry Christmas Mr.Lawrence.bme"));
+        // BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms"));
         patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
         InGameSoundManager.Instance.LoadSounds(parsedHeaderData.TrackInfo);
         // 메트로놈이 없는 경우 최초 생성
@@ -36,7 +37,7 @@ public class InGameManager : MonoBehaviour
             Metronome metronomeComponent = metronome.AddComponent<Metronome>();
             double beat = patternData.beatMeasureLengthTable.ContainsKey(0) ? patternData.beatMeasureLengthTable[0] : 1;
 
-            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.bar, beat);
+            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.totalBarCount, beat);
         }
         #elif UNITY_STANDALONE
         patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
@@ -49,7 +50,7 @@ public class InGameManager : MonoBehaviour
             Metronome metronomeComponent = metronome.AddComponent<Metronome>();
             double beat = patternData.beatMeasureLengthTable.ContainsKey(0) ? patternData.beatMeasureLengthTable[0] : 1;
 
-            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.bar, beat);
+            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.totalBarCount, beat);
         }
         #endif
 

@@ -21,7 +21,7 @@ public class InGameSoundManager : MonoBehaviour
 
     public void LoadSounds(TrackInfo trackInfo)
     {
-        trackSoundChannelGroup = new FMOD.ChannelGroup();
+        FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("KeySoundGroup", out trackSoundChannelGroup);
         trackSoundChannels = new FMOD.Channel[1295];
         trackSounds = new FMOD.Sound[1295];
 
@@ -37,20 +37,23 @@ public class InGameSoundManager : MonoBehaviour
     public void PlaySound(int channelKey)
     {
         FMOD.RESULT result = FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannels[channelKey]);
-    
+
         if (result != FMOD.RESULT.OK)
         {
             Debug.LogError("Failed to play sound: " + result);
             return;
         }
 
-        trackSoundChannels[channelKey].isPlaying(out bool isPlaying);
-        if (isPlaying)
+        trackSoundChannels[channelKey].getPaused(out bool isPaused);
+        if (isPaused)
+        {
+            trackSoundChannels[channelKey].setPaused(false);
+        }
+        else
         {
             trackSoundChannels[channelKey].stop();
+            FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannels[channelKey]);
         }
-
-        trackSoundChannels[channelKey].setPaused(false);
     }
 
     void OnDestroy() {

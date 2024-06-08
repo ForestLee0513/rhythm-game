@@ -10,6 +10,7 @@ public class Metronome : MonoBehaviour
     public double BeatInterval { get; private set; }
     private double beatPerBar;
     public double NormalizedTime { get; private set; }
+    public double CurrentTime { get; private set; }
     public int BarCount { get; private set; }
     public double Beat { get; private set; }
     private double lastBeat;
@@ -69,7 +70,7 @@ public class Metronome : MonoBehaviour
             return;
         }
 
-        double currentTime = Time.time * 1000;
+        CurrentTime = Time.time * 1000;
 
         if (Bpm != lastBpm || Beat != lastBeat)
         {
@@ -81,15 +82,15 @@ public class Metronome : MonoBehaviour
             lastBeat = Beat;
         }
 
-        if (currentTime >= nextBeatTime)
+        if (CurrentTime >= nextBeatTime)
         {
             PlaySound(0);
             beatStartTime = nextBeatTime;
             nextBeatTime += BeatInterval;
         }
         
-        BarCount = (int)(currentTime / (BeatInterval * beatPerBar)) + 1;
-        NormalizedTime = currentTime - beatStartTime;
+        BarCount = (int)(CurrentTime / (BeatInterval * beatPerBar));
+        NormalizedTime = CurrentTime - beatStartTime;
     }
 
     public void SetBpm(double newBpm)

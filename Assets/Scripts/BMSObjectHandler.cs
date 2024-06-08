@@ -21,15 +21,16 @@ public class BMSObjectHandler : MonoBehaviour
 
             bgmQueue[bgmSoundChannel.Bar].Enqueue(bgmSoundChannel);
         }
-
-        // Debug.Log(Metronome.Instance);
     }
 
     void Update()
     {
-        if (bgmQueue[Metronome.Instance.BarCount] != null)
+        if (bgmQueue[Metronome.Instance.BarCount] != null && bgmQueue[Metronome.Instance.BarCount].Count > 0)
         {
-            // Debug.Log("Bar: " + Metronome.Instance.BarCount + " / " + bgmQueue[Metronome.Instance.BarCount].Count);
+            if (Metronome.Instance.CurrentTime >= bgmQueue[Metronome.Instance.BarCount].Peek().Timing)
+            {
+                InGameSoundManager.Instance.PlaySound(bgmQueue[Metronome.Instance.BarCount].Dequeue().KeySound);
+            }
         }
     }
 }
