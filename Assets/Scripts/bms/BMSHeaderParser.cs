@@ -101,7 +101,7 @@ namespace BMS
 
                 if (headerKey.StartsWith("#WAV"))
                 {
-                    TrackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, headerValue));
+                    TrackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, Path.GetFileNameWithoutExtension(headerValue)));
                 }
                 if (headerKey.StartsWith("#BMP"))
                 {

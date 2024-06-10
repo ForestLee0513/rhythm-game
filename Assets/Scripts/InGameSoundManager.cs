@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using BMS;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public class InGameSoundManager : MonoBehaviour
     private FMOD.ChannelGroup trackSoundChannelGroup;
     private FMOD.Sound[] trackSounds;
     private FMOD.Channel[] trackSoundChannels;
+
+    private string[] extensions = { ".wav", ".mp3", ".ogg" };
+    private string selectedExtension;
 
     private void Awake()
     {
@@ -27,7 +31,17 @@ public class InGameSoundManager : MonoBehaviour
 
         foreach (int trackSoundKey in trackInfo.audioFileNames.Keys)
         {
-            string path = trackInfo.audioFileNames[trackSoundKey];
+            
+            foreach (string extension in extensions)
+            {
+                if (File.Exists($"{trackInfo.audioFileNames[trackSoundKey]}{extension}"))
+                {
+                    selectedExtension = extension;
+                    break;
+                }
+            }
+
+            string path = $"{trackInfo.audioFileNames[trackSoundKey]}{selectedExtension}";
 
             FMODUnity.RuntimeManager.CoreSystem.createSound(path, FMOD.MODE.CREATESAMPLE | FMOD.MODE.ACCURATETIME, out trackSounds[trackSoundKey]);
             trackSoundChannels[trackSoundKey].setChannelGroup(trackSoundChannelGroup);

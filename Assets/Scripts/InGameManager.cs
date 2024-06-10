@@ -26,7 +26,7 @@ public class InGameManager : MonoBehaviour
 
         // 개발 환경인 경우에는 로컬에 있는 임의의 파일로 지정함.
         #if UNITY_EDITOR
-        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Merry Christmas Mr. (by sasakure.UK)/Merry Christmas Mr.Lawrence.bme"));
+        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/L9 (by paraoka)/9_5.bms"));
         // BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms"));
         patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
         InGameSoundManager.Instance.LoadSounds(parsedHeaderData.TrackInfo);
