@@ -54,8 +54,8 @@ public class InGameManager : MonoBehaviour
         }
         #endif
 
-        // BMS 오브젝트 관리자 생성
-        GameObject bmsObjectHandler = new GameObject("BMSObjectHandler");
-        bmsObjectHandler.AddComponent<BMSObjectHandler>();
+        // BGM 제어 컴포넌트 추가
+        GameObject BGMHandler = new GameObject("BGMHandler");
+        BGMHandler.AddComponent<BGMHandler>();
     }
 }
