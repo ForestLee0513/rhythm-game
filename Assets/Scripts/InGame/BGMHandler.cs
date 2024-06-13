@@ -1,13 +1,23 @@
+using System.Collections.Generic;
+
 public class BGMHandler : BMSObjectHandler
 {
-    public override void Update()
+    protected override void Start()
     {
-        if (bmsObjectQueue[Metronome.Instance.BarCount] != null && bmsObjectQueue[Metronome.Instance.BarCount].Count > 0)
+        bgmObjectQueue = InitializeQueue(InGameManager.Instance.patternData.bgmKeySoundChannel);
+    }
+
+    Queue<BMS.Note>[] bgmObjectQueue;
+
+    protected override void Update()
+    {
+        if (bgmObjectQueue[Metronome.Instance.BarCount] != null && bgmObjectQueue[Metronome.Instance.BarCount].Count > 0)
         {
-            if (Metronome.Instance.CurrentTime >= bmsObjectQueue[Metronome.Instance.BarCount].Peek().Timing)
+            if (Metronome.Instance.CurrentTime >= bgmObjectQueue[Metronome.Instance.BarCount].Peek().Timing)
             {
-                InGameSoundManager.Instance.PlaySound(bmsObjectQueue[Metronome.Instance.BarCount].Dequeue().KeySound);
+                InGameSoundManager.Instance.PlaySound(bgmObjectQueue[Metronome.Instance.BarCount].Dequeue().KeySound);
             }
         }
     }
+
 }

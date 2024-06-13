@@ -4,24 +4,24 @@ using UnityEngine;
 
 public abstract class BMSObjectHandler : MonoBehaviour
 {
-    // bms 오브젝트의 마디를 index로 관리
-    protected Queue<BMS.Note>[] bmsObjectQueue;
-
-    // 초기화
-    void Start()
+    protected Queue<T>[] InitializeQueue<T>(List<T> targetObject) where T : BMSObject
     {
-        bmsObjectQueue = new Queue<BMS.Note>[InGameManager.Instance.patternData.bgmKeySoundChannel.Count];
+        Queue<T>[] bmsObjectQueue = new Queue<T>[targetObject.Count];
         // bgm 오브젝트 초기화
-        foreach (var bgmSoundChannel in InGameManager.Instance.patternData.bgmKeySoundChannel)
+        foreach (var bmsObjectItem in targetObject)
         {
-            if (bmsObjectQueue[bgmSoundChannel.Bar] == null)
+            if (bmsObjectQueue[bmsObjectItem.Bar] == null)
             {
-                bmsObjectQueue[bgmSoundChannel.Bar] = new Queue<BMS.Note>();
+                bmsObjectQueue[bmsObjectItem.Bar] = new Queue<T>();
             }
 
-            bmsObjectQueue[bgmSoundChannel.Bar].Enqueue(bgmSoundChannel);
+            bmsObjectQueue[bmsObjectItem.Bar].Enqueue(bmsObjectItem);
         }
+
+        return bmsObjectQueue;
     }
 
-    abstract public void Update();
+    abstract protected void Start();
+
+    abstract protected void Update();
 }
