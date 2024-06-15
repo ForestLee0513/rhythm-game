@@ -4,24 +4,30 @@ using UnityEngine;
 
 public abstract class BMSObjectHandler : MonoBehaviour
 {
-    protected Queue<T>[] InitializeQueue<T>(List<T> targetObject) where T : BMSObject
+    protected int bar = 0;
+    protected double startedTime;
+    protected double currentTime;
+
+    protected Queue<T> InitializeQueue<T>(List<T> targetObject) where T : BMSObject
     {
-        Queue<T>[] bmsObjectQueue = new Queue<T>[targetObject.Count];
+        Queue<T> bmsObjectQueue = new();
+
         // bgm 오브젝트 초기화
         foreach (var bmsObjectItem in targetObject)
         {
-            if (bmsObjectQueue[bmsObjectItem.Bar] == null)
-            {
-                bmsObjectQueue[bmsObjectItem.Bar] = new Queue<T>();
-            }
-
-            bmsObjectQueue[bmsObjectItem.Bar].Enqueue(bmsObjectItem);
+            bmsObjectQueue.Enqueue(bmsObjectItem);
         }
 
         return bmsObjectQueue;
     }
 
-    abstract protected void Start();
+    protected virtual void Start()
+    {
+        startedTime = Time.time;
+    }
 
-    abstract protected void Update();
+    protected virtual void Update()
+    {
+        currentTime = Time.time - startedTime;
+    }
 }

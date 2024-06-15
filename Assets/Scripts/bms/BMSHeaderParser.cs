@@ -112,7 +112,7 @@ namespace BMS
                 if (headerKey.StartsWith("#STOP"))
                 {
                     Int32.TryParse(headerValue, out int stop);
-                    TrackInfo.stopTable.Add(Decode36(headerKey.Substring(5)), stop);
+                    TrackInfo.stopTable.Add(Decode36(headerKey.Substring(5)), stop / 192);
                 }
 
                 // BPM //

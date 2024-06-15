@@ -38,16 +38,16 @@ namespace BMS
 			Beat = beat;
 		}
 
+		public void CalculateBeat(double prevBeats, double measureLength)
+		{
+			Beat = Beat * measureLength + prevBeats;
+		}
+		
 		public int CompareTo(BMSObject other)
 		{
-			if (Bar != other.Bar)
-			{
-				return Bar.CompareTo(other.Bar);
-			}
-			else
-			{
-				return Beat.CompareTo(other.Beat);
-			}
+			if (Beat < other.Beat) return 1;
+			if (Beat == other.Beat) return 0;
+			return -1;
 		}
 	}
 }

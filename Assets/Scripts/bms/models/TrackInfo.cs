@@ -20,7 +20,7 @@ namespace BMS
         public Dictionary<int, string> audioFileNames = new Dictionary<int, string>();
         public Dictionary<int, string> imageFileNames = new Dictionary<int, string>(); 
         public Dictionary<int, double> bpmTable = new Dictionary<int, double>();
-        public Dictionary<int, int> stopTable = new Dictionary<int, int>();
+        public Dictionary<int, double> stopTable = new Dictionary<int, double>();
         public int lnobj = 0;
         public int lnType = 1;
 

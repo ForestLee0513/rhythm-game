@@ -10,6 +10,7 @@ public class InGameManager : MonoBehaviour
     public static InGameManager Instance { get { return instance; } }
 
     public float scrollSpeed = 3.0f;
+
     private void Awake()
     {
         if (instance == null)
@@ -26,36 +27,26 @@ public class InGameManager : MonoBehaviour
 
         // 개발 환경인 경우에는 로컬에 있는 임의의 파일로 지정함.
         #if UNITY_EDITOR
-        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/L9 (by paraoka)/9_5.bms"));
+        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/slic_hertz/_slic_hertz_s1.bme"));
         // BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms"));
         patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
         InGameSoundManager.Instance.LoadSounds(parsedHeaderData.TrackInfo);
-        // 메트로놈이 없는 경우 최초 생성
-        if (Metronome.Instance == null)
-        {
-            GameObject metronome = new GameObject("Metronome");
-            Metronome metronomeComponent = metronome.AddComponent<Metronome>();
-            double beat = patternData.beatMeasureLengthTable.ContainsKey(0) ? patternData.beatMeasureLengthTable[0] : 1;
-
-            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.totalBarCount, beat);
-        }
         #elif UNITY_STANDALONE
         patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
         currentBPM = GameManager.Instance.selectedTrack.TrackInfo.bpm;
         InGameSoundManager.Instance.LoadSounds(GameManager.instance.selectedTrack);
-        // 메트로놈이 없는 경우 최초 생성
-        if (Metronome.Instance == null)
-        {
-            GameObject metronome = new GameObject("Metronome");
-            Metronome metronomeComponent = metronome.AddComponent<Metronome>();
-            double beat = patternData.beatMeasureLengthTable.ContainsKey(0) ? patternData.beatMeasureLengthTable[0] : 1;
-
-            metronomeComponent.Init(parsedHeaderData.TrackInfo.bpm, patternData.totalBarCount, beat);
-        }
         #endif
 
+        InitializeBMSObjectHandler();
+    }
+
+    private void InitializeBMSObjectHandler()
+    {
         // BGM 제어 컴포넌트 추가
         GameObject BGMHandler = new GameObject("BGMHandler");
         BGMHandler.AddComponent<BGMHandler>();
+        // BGM 제어 컴포넌트 추가
+        GameObject BPMHandler = new GameObject("BPMHandler");
+        BPMHandler.AddComponent<BPMHandler>();
     }
 }

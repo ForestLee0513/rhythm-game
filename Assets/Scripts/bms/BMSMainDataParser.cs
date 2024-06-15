@@ -22,8 +22,8 @@ namespace BMS
             parseData += ParseMainData;
             ReadFile();
             // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
-            pattern.SortObjects();
-            pattern.CalculateTiming(TrackInfo.bpm);
+
+            pattern.CalculateBeatTimings(TrackInfo.bpm, TrackInfo.stopTable);
         }
 
         public BMSMainDataParser(TrackInfo trackInfo): base(trackInfo)
@@ -31,8 +31,7 @@ namespace BMS
             parseData += ParseMainData;
             ReadFile();
             // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
-            pattern.SortObjects();
-            pattern.CalculateTiming(TrackInfo.bpm);
+            pattern.CalculateBeatTimings(TrackInfo.bpm, TrackInfo.stopTable);
         }
 
         private void ParseMainData(string line)
@@ -170,7 +169,8 @@ namespace BMS
                             // BPM CHANNEL //
                             if (channel == "03")
                             {
-                                pattern.AddBPMTable(currentBar, beat, beatLength, parsedToIntValue);
+                                double bpm = int.Parse(mainDataValue.Substring(i, 2), System.Globalization.NumberStyles.HexNumber);
+                                pattern.AddBPMTable(currentBar, beat, beatLength, bpm);
                                 continue;
                             }
 
@@ -185,13 +185,6 @@ namespace BMS
                             if (channel == "08")
                             {
                                 pattern.AddBPMTable(currentBar, beat, beatLength, TrackInfo.bpmTable[parsedToIntValue]);
-                                continue;
-                            }
-
-                            // STOP GIMMIK Table //
-                            if (channel == "09")
-                            {
-                                pattern.AddStop(currentBar, beat, beatLength, TrackInfo.stopTable[parsedToIntValue]);
                                 continue;
                             }
                         }

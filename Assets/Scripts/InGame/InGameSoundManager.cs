@@ -25,13 +25,14 @@ public class InGameSoundManager : MonoBehaviour
 
     public void LoadSounds(TrackInfo trackInfo)
     {
+        FMODUnity.RuntimeManager.CoreSystem.setSoftwareChannels(19425);
+
         FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("KeySoundGroup", out trackSoundChannelGroup);
-        trackSoundChannels = new FMOD.Channel[1295];
-        trackSounds = new FMOD.Sound[1295];
+        trackSoundChannels = new FMOD.Channel[1296];
+        trackSounds = new FMOD.Sound[1296];
 
         foreach (int trackSoundKey in trackInfo.audioFileNames.Keys)
         {
-            
             foreach (string extension in extensions)
             {
                 if (File.Exists($"{trackInfo.audioFileNames[trackSoundKey]}{extension}"))
@@ -58,16 +59,16 @@ public class InGameSoundManager : MonoBehaviour
             return;
         }
 
-        trackSoundChannels[channelKey].getPaused(out bool isPaused);
-        if (isPaused)
-        {
-            trackSoundChannels[channelKey].setPaused(false);
-        }
-        else
-        {
+        // trackSoundChannels[channelKey].getPaused(out bool isPaused);
+        // if (isPaused)
+        // {
+        //     trackSoundChannels[channelKey].setPaused(false);
+        // }
+        // else
+        // {
             trackSoundChannels[channelKey].stop();
             FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannels[channelKey]);
-        }
+        // }
     }
 
     void OnDestroy() {

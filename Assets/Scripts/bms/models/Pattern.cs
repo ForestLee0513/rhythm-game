@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Diagnostics;
-using Unity.VisualScripting;
+using UnityEditor;
+using UnityEngine;
 
 namespace BMS
 {
@@ -72,87 +72,84 @@ namespace BMS
             lines[line].NoteList.Add(new Note(bar, beat, beatLength, keySound, flag));
         }
 
-        public void SortObjects()
+        private double GetBeatMeasureLength(int bar) => beatMeasureLengthTable.ContainsKey(bar) ? beatMeasureLengthTable[bar] : 1.0;
+
+        private double GetBPM(double beat)
         {
-            bpmList.Sort();
-            bgmKeySoundChannel.Sort();
-            stopList.Sort();
-            bgaSequenceFrameList.Sort();
-            foreach (Line line in lines)
-            {
-                line.NoteList.Sort();
-                line.LandMineList.Sort();
-            }
+            if (bpmList.Count == 1) return bpmList[0].Bpm;
+            int idx = bpmList.Count - 1;
+            while (idx > 0 && beat >= bpmList[--idx].Beat) ;
+            return bpmList[idx + 1].Bpm;
         }
 
-        public void CalculateTiming(double initBpm)
+        private double GetPreviousBarBeatSum(int bar)
         {
-            double currentTime = 0.0;
-            double currentBPM = initBpm; // 기본 BPM
-            double currentBeatMeasureLength = 4; // 변박을 하고싶다면 n * 4를 처리하면 됨. 예를들어 3비트면 0.75 * 4 = 3 임.
-
-            for (int currentBar = 0; currentBar < totalBarCount; ++currentBar)
+            double sum = 0;
+            for (int i = 0; i < bar; ++i)
             {
-                if (beatMeasureLengthTable.ContainsKey(currentBar))
-                {
-                    currentBeatMeasureLength = beatMeasureLengthTable[currentBar] * 4;
-                }
+                sum += 4.0 * GetBeatMeasureLength(i);
+            }
+            return sum;
+        }
 
-                foreach (BPM bpmObject in bpmList)
-                {
-                    if (bpmObject.Bar == currentBar)
-                    {
-                        double beatPosition = bpmObject.Beat * currentBeatMeasureLength;
-                        double duration = beatPosition * (60000.0 / currentBPM);
-                        currentTime += duration;
-                        currentBPM = bpmObject.Bpm;
-                    }
-                }
-                
-                for (int noteIndex = 0; noteIndex < lines.Length; ++noteIndex)
-                {
-                    foreach (Note note in lines[noteIndex].NoteList)
-                    {
-                        if (note.Bar == currentBar)
-                        {
-                            double beatPosition = note.Beat * currentBeatMeasureLength;
-                            double duration = beatPosition * (60000.0 / currentBPM);
-                            note.Timing = currentTime + duration;
-                        }
-                    }
-                }
+        private double GetTimingInSecond(BMSObject obj)
+        {
+            double timing = 0;
+            int i;
+            for (i = bpmList.Count - 1; i > 0 && obj.Beat > bpmList[i - 1].Beat; --i)
+            {
+                timing += (bpmList[i - 1].Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
+            }
+            timing += (obj.Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
+            return timing;
+        }
+        
+        public void CalculateBeatTimings(double defaultBPM, Dictionary<int, double> stopTable)
+        {
+            if (bpmList.Count == 0 || (bpmList.Count > 0 && bpmList[bpmList.Count - 1].Beat != 0))
+            {
+                AddBPMTable(0, 0, 1, defaultBPM);
+            }
+            bpmList[bpmList.Count - 1].Timing = 0;
+            for (int i = bpmList.Count - 2; i > -1; --i)
+            {
+                bpmList[i].Timing = bpmList[i + 1].Timing + (bpmList[i].Beat - bpmList[i + 1].Beat) / (bpmList[i + 1].Bpm / 60);
+            }
 
-                foreach (Stop stopObject in stopList)
-                {
-                    if (stopObject.Bar == currentBar)
-                    {
-                        double beatPosition = stopObject.Beat * currentBeatMeasureLength;
-                        double duration = beatPosition * (60000.0 / currentBPM);
-                        currentTime += duration;
-                    }
-                }
+            foreach (Stop s in stopList)
+            {
+                s.CalculateBeat(GetPreviousBarBeatSum(s.Bar), GetBeatMeasureLength(s.Bar));
+                s.Timing = GetTimingInSecond(s);
+            }
 
-                foreach (BGASequence bgaSequence in bgaSequenceFrameList)
-                {
-                    if (bgaSequence.Bar == currentBar)
-                    {
-                        double beatPosition = bgaSequence.Beat * currentBeatMeasureLength;
-                        double duration = beatPosition * (60000.0 / currentBPM);
-                        currentTime += duration;
-                    }
-                }
+            foreach (BGASequence bgaSequence in bgaSequenceFrameList)
+            {
+                bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
+                bgaSequence.Timing = GetTimingInSecond(bgaSequence);
+                int idx = stopList.Count - 1;
+                double sum = 0;
+                while (idx > 0 && bgaSequence.Beat > stopList[--idx].Beat) sum += stopTable[stopList[idx].Bar] / GetBPM(stopList[idx].Beat) * 240;
+                bgaSequence.Timing += sum;
+            }
 
-                foreach (Note bgm in bgmKeySoundChannel)
-                {
-                    if (bgm.Bar == currentBar)
-                    {
-                        double beatPosition = bgm.Beat * currentBeatMeasureLength;
-                        double duration = beatPosition * (60000.0 / currentBPM);
-                        bgm.Timing = currentTime + duration;
-                    }
-                }
+            foreach (Note bgm in bgmKeySoundChannel)
+            {
+                bgm.CalculateBeat(GetPreviousBarBeatSum(bgm.Bar), GetBeatMeasureLength(bgm.Bar));
+                bgm.Timing = GetTimingInSecond(bgm);
+            }
 
-                currentTime += currentBeatMeasureLength * (60000.0 / currentBPM);
+            foreach (Line line in lines)
+            {
+                foreach (Note note in line.NoteList)
+                {
+                    note.CalculateBeat(GetPreviousBarBeatSum(note.Bar), GetBeatMeasureLength(note.Bar));
+                    note.Timing = GetTimingInSecond(note);
+                }
+                foreach (Note mineList in line.LandMineList)
+                {
+                    mineList.CalculateBeat(GetPreviousBarBeatSum(mineList.Bar), GetBeatMeasureLength(mineList.Bar));
+                    mineList.Timing = GetTimingInSecond(mineList);
+                }
             }
         }
     }
