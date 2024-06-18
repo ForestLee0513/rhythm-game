@@ -11,9 +11,9 @@ public class BPMHandler : BMSObjectHandler
 
     Queue<BMS.BPM> bpmObjectQueue;
 
-    protected override void Update()
+    protected override void FixedUpdate()
     {
-        base.Update();
+        base.FixedUpdate();
         // if (bpmObjectQueue.Length > 0 && bpmObjectQueue[Metronome.Instance.BarCount] != null && bpmObjectQueue[Metronome.Instance.BarCount].Count > 0)
         // {
         //     if (Metronome.Instance.CurrentTime >= bpmObjectQueue[Metronome.Instance.BarCount].Peek().Timing)

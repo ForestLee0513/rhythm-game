@@ -23,11 +23,11 @@ public abstract class BMSObjectHandler : MonoBehaviour
 
     protected virtual void Start()
     {
-        startedTime = Time.time;
+        startedTime = Time.fixedTime;
     }
 
-    protected virtual void Update()
+    protected virtual void FixedUpdate()
     {
-        currentTime = Time.time - startedTime;
+        currentTime = Time.fixedTime - startedTime;
     }
 }

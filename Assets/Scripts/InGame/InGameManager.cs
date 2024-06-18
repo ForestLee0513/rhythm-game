@@ -42,11 +42,15 @@ public class InGameManager : MonoBehaviour
 
     private void InitializeBMSObjectHandler()
     {
-        // BGM 제어 컴포넌트 추가
-        GameObject BGMHandler = new GameObject("BGMHandler");
-        BGMHandler.AddComponent<BGMHandler>();
-        // BGM 제어 컴포넌트 추가
-        GameObject BPMHandler = new GameObject("BPMHandler");
-        BPMHandler.AddComponent<BPMHandler>();
+        // 스레드 분리된거 추가
+        GameObject BGMHandlerMultiThread = new GameObject("BGMHandlerMultiThread");
+        BGMHandlerMultiThread.AddComponent<BGMHandlerMultiThread>();
+
+        // // BGM 제어 컴포넌트 추가
+        // GameObject BGMHandler = new GameObject("BGMHandler");
+        // BGMHandler.AddComponent<BGMHandler>();
+        // // BGM 제어 컴포넌트 추가
+        // GameObject BPMHandler = new GameObject("BPMHandler");
+        // BPMHandler.AddComponent<BPMHandler>();
     }
 }

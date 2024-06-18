@@ -30,9 +30,9 @@ public class BGMHandler : BMSObjectHandler
     Queue<BMS.Note> note7;
     Queue<BMS.Note> note8;
 
-    protected override void Update()
+    protected override void FixedUpdate()
     {
-        base.Update();
+        base.FixedUpdate();
 
         if (bgmObjectQueue.Count > 0 && currentTime >= bgmObjectQueue.Peek().Timing)
         {

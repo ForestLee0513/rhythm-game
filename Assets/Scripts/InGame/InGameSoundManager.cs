@@ -10,7 +10,7 @@ public class InGameSoundManager : MonoBehaviour
     // 게임 내에서 사용할 악기 사운드
     private FMOD.ChannelGroup trackSoundChannelGroup;
     private FMOD.Sound[] trackSounds;
-    private FMOD.Channel[] trackSoundChannels;
+    private FMOD.Channel trackSoundChannel;
 
     private string[] extensions = { ".wav", ".mp3", ".ogg" };
     private string selectedExtension;
@@ -25,10 +25,8 @@ public class InGameSoundManager : MonoBehaviour
 
     public void LoadSounds(TrackInfo trackInfo)
     {
-        FMODUnity.RuntimeManager.CoreSystem.setSoftwareChannels(19425);
-
-        FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("KeySoundGroup", out trackSoundChannelGroup);
-        trackSoundChannels = new FMOD.Channel[1296];
+        trackSoundChannelGroup = new FMOD.ChannelGroup();
+        trackSoundChannel = new FMOD.Channel();
         trackSounds = new FMOD.Sound[1296];
 
         foreach (int trackSoundKey in trackInfo.audioFileNames.Keys)
@@ -44,14 +42,14 @@ public class InGameSoundManager : MonoBehaviour
 
             string path = $"{trackInfo.audioFileNames[trackSoundKey]}{selectedExtension}";
 
-            FMODUnity.RuntimeManager.CoreSystem.createSound(path, FMOD.MODE.CREATESAMPLE | FMOD.MODE.ACCURATETIME, out trackSounds[trackSoundKey]);
-            trackSoundChannels[trackSoundKey].setChannelGroup(trackSoundChannelGroup);
+            FMODUnity.RuntimeManager.CoreSystem.createSound(path, FMOD.MODE.CREATESAMPLE, out trackSounds[trackSoundKey]);
         }
+        trackSoundChannel.setChannelGroup(trackSoundChannelGroup);
     }
 
     public void PlaySound(int channelKey)
     {
-        FMOD.RESULT result = FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannels[channelKey]);
+        FMOD.RESULT result = FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannel);
 
         if (result != FMOD.RESULT.OK)
         {
@@ -59,15 +57,15 @@ public class InGameSoundManager : MonoBehaviour
             return;
         }
 
-        // trackSoundChannels[channelKey].getPaused(out bool isPaused);
+        // trackSoundChannel.getPaused(out bool isPaused);
         // if (isPaused)
         // {
-        //     trackSoundChannels[channelKey].setPaused(false);
+        //     trackSoundChannel.setPaused(false);
         // }
         // else
         // {
-            trackSoundChannels[channelKey].stop();
-            FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannels[channelKey]);
+        //     trackSoundChannel.stop();
+            FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannel);
         // }
     }
 
