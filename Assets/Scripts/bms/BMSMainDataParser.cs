@@ -21,8 +21,7 @@ namespace BMS
         {
             parseData += ParseMainData;
             ReadFile();
-            // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
-
+            // 패턴 파싱을 다하고나서 노트 bar와 beat를 기준으로 정렬
             pattern.CalculateBeatTimings(TrackInfo.bpm, TrackInfo.stopTable);
         }
 
@@ -30,7 +29,12 @@ namespace BMS
         {
             parseData += ParseMainData;
             ReadFile();
-            // 패턴 파싱을 다하고나서 노트 bar와 beat을 기준으로 정렬
+            //foreach (int stopTableKey in TrackInfo.stopTable.Keys)
+            //{
+            //    Debug.Log($"{stopTableKey}: {TrackInfo.stopTable[stopTableKey]}");
+            //}
+
+            // 패턴 파싱을 다하고나서 노트 bar와 beat를 기준으로 정렬
             pattern.CalculateBeatTimings(TrackInfo.bpm, TrackInfo.stopTable);
         }
 
@@ -185,6 +189,12 @@ namespace BMS
                             if (channel == "08")
                             {
                                 pattern.AddBPMTable(currentBar, beat, beatLength, TrackInfo.bpmTable[parsedToIntValue]);
+                                continue;
+                            }
+
+                            if (channel == "09")
+                            {
+                                pattern.AddStop(currentBar, beat, beatLength, parsedToIntValue);
                                 continue;
                             }
                         }

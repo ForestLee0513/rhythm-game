@@ -45,9 +45,9 @@ namespace BMS
 		
 		public int CompareTo(BMSObject other)
 		{
-			if (Beat < other.Beat) return 1;
+			if (Beat < other.Beat) return -1;
 			if (Beat == other.Beat) return 0;
-			return -1;
+			return 1;
 		}
 	}
 }

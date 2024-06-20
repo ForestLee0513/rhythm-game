@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace BMS
 {
@@ -42,6 +45,11 @@ namespace BMS
         {
             bpmList.Add(new BPM(bar, beat, beatLength, bpmKey));
         }
+
+        private void AddFirstBPMTable(int bar, double beat, double beatLength, double bpmKey)
+        {
+            bpmList.Insert(0, new BPM(bar, beat, beatLength, bpmKey));
+        }
         
         // 마디 별 BGM 사운드 추가
         public void AddBGMKeySound(int bar, double beat, double beatLength, int keySound)
@@ -74,14 +82,6 @@ namespace BMS
 
         private double GetBeatMeasureLength(int bar) => beatMeasureLengthTable.ContainsKey(bar) ? beatMeasureLengthTable[bar] : 1.0;
 
-        private double GetBPM(double beat)
-        {
-            if (bpmList.Count == 1) return bpmList[0].Bpm;
-            int idx = bpmList.Count - 1;
-            while (idx > 0 && beat >= bpmList[--idx].Beat) ;
-            return bpmList[idx + 1].Bpm;
-        }
-
         private double GetPreviousBarBeatSum(int bar)
         {
             double sum = 0;
@@ -96,24 +96,55 @@ namespace BMS
         {
             double timing = 0;
             int i;
-            for (i = bpmList.Count - 1; i > 0 && obj.Beat > bpmList[i - 1].Beat; --i)
+            for (i = 0; i < bpmList.Count - 1 && obj.Beat > bpmList[i + 1].Beat; ++i)
             {
-                timing += (bpmList[i - 1].Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
+                timing += (bpmList[i + 1].Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
             }
             timing += (obj.Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
             return timing;
         }
-        
+
+        private double GetBPM(double beat)
+        {
+            if (bpmList.Count == 1) return bpmList[0].Bpm;
+            int idx = 0;
+            while (idx < bpmList.Count - 1 && beat >= bpmList[idx + 1].Beat)
+            {
+                idx++;
+            }
+            return bpmList[idx].Bpm;
+        }
+
+        private double CalculateStopTiming(BMSObject bmsObj, Dictionary<int, double> stopTable)
+        {
+            double sum = 0;
+            int idx = 0;
+            while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx + 1].Beat)
+            {
+                sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240;
+                idx++;
+            }
+
+            return sum;
+        }
+
         public void CalculateBeatTimings(double defaultBPM, Dictionary<int, double> stopTable)
         {
-            if (bpmList.Count == 0 || (bpmList.Count > 0 && bpmList[bpmList.Count - 1].Beat != 0))
+            foreach (BPM bpm in bpmList)
             {
-                AddBPMTable(0, 0, 1, defaultBPM);
+                bpm.CalculateBeat(GetPreviousBarBeatSum(bpm.Bar), GetBeatMeasureLength(bpm.Bar));
             }
-            bpmList[bpmList.Count - 1].Timing = 0;
-            for (int i = bpmList.Count - 2; i > -1; --i)
+            bpmList.Sort();
+
+            if (bpmList.Count == 0 || (bpmList.Count > 0 && bpmList[0].Beat != 0))
             {
-                bpmList[i].Timing = bpmList[i + 1].Timing + (bpmList[i].Beat - bpmList[i + 1].Beat) / (bpmList[i + 1].Bpm / 60);
+                AddFirstBPMTable(0, 0, 1, defaultBPM);
+            }
+            bpmList[0].Timing = 0;
+
+            for (int i = 1; i < bpmList.Count; ++i)
+            {
+                bpmList[i].Timing = bpmList[i - 1].Timing + (bpmList[i].Beat - bpmList[i - 1].Beat) / (bpmList[i - 1].Bpm / 60);
             }
 
             foreach (Stop s in stopList)
@@ -121,22 +152,24 @@ namespace BMS
                 s.CalculateBeat(GetPreviousBarBeatSum(s.Bar), GetBeatMeasureLength(s.Bar));
                 s.Timing = GetTimingInSecond(s);
             }
+            stopList.Sort();
 
             foreach (BGASequence bgaSequence in bgaSequenceFrameList)
             {
                 bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
                 bgaSequence.Timing = GetTimingInSecond(bgaSequence);
-                int idx = stopList.Count - 1;
-                double sum = 0;
-                while (idx > 0 && bgaSequence.Beat > stopList[--idx].Beat) sum += stopTable[stopList[idx].Bar] / GetBPM(stopList[idx].Beat) * 240;
-                bgaSequence.Timing += sum;
+
             }
+            bgaSequenceFrameList.Sort();
 
             foreach (Note bgm in bgmKeySoundChannel)
             {
                 bgm.CalculateBeat(GetPreviousBarBeatSum(bgm.Bar), GetBeatMeasureLength(bgm.Bar));
                 bgm.Timing = GetTimingInSecond(bgm);
+                double stopTiming = CalculateStopTiming(bgm, stopTable);
+                bgm.Timing += stopTiming;
             }
+            bgmKeySoundChannel.Sort();
 
             foreach (Line line in lines)
             {
@@ -144,12 +177,20 @@ namespace BMS
                 {
                     note.CalculateBeat(GetPreviousBarBeatSum(note.Bar), GetBeatMeasureLength(note.Bar));
                     note.Timing = GetTimingInSecond(note);
+                    double stopTiming = CalculateStopTiming(note, stopTable);
+                    note.Timing += stopTiming;
                 }
-                foreach (Note mineList in line.LandMineList)
+
+                foreach (Note mineNote in line.LandMineList)
                 {
-                    mineList.CalculateBeat(GetPreviousBarBeatSum(mineList.Bar), GetBeatMeasureLength(mineList.Bar));
-                    mineList.Timing = GetTimingInSecond(mineList);
+                    mineNote.CalculateBeat(GetPreviousBarBeatSum(mineNote.Bar), GetBeatMeasureLength(mineNote.Bar));
+                    mineNote.Timing = GetTimingInSecond(mineNote);
+                    double stopTiming = CalculateStopTiming(mineNote, stopTable);
+                    mineNote.Timing += stopTiming;
                 }
+
+                line.NoteList.Sort();
+                line.LandMineList.Sort();
             }
         }
     }

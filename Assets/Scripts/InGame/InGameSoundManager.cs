@@ -57,16 +57,16 @@ public class InGameSoundManager : MonoBehaviour
             return;
         }
 
-        // trackSoundChannel.getPaused(out bool isPaused);
-        // if (isPaused)
-        // {
-        //     trackSoundChannel.setPaused(false);
-        // }
-        // else
-        // {
-        //     trackSoundChannel.stop();
+        trackSoundChannel.getPaused(out bool isPaused);
+        if (isPaused)
+        {
+            trackSoundChannel.setPaused(false);
+        }
+        else
+        {
+            trackSoundChannel.stop();
             FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannel);
-        // }
+        }
     }
 
     void OnDestroy() {
