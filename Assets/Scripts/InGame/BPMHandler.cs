@@ -1,25 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BPMHandler : BMSObjectHandler
+public class BPMHandler : BMSObjectHandlerMultiThread
 {
+    private int currentBPMIndex = 0;
+    private double currentBpm = 0;
+
     protected override void Start()
     {
         base.Start();
-        bpmObjectQueue = InitializeQueue(InGameManager.Instance.patternData.bpmList);
+        currentBpm = InGameManager.Instance.patternData.bpmList[currentBPMIndex].Bpm;
     }
 
-    Queue<BMS.BPM> bpmObjectQueue;
-
-    protected override void FixedUpdate()
+    protected override void OnTimeElapsed(double elapsedMilliseconds)
     {
-        base.FixedUpdate();
-        // if (bpmObjectQueue.Length > 0 && bpmObjectQueue[Metronome.Instance.BarCount] != null && bpmObjectQueue[Metronome.Instance.BarCount].Count > 0)
-        // {
-        //     if (Metronome.Instance.CurrentTime >= bpmObjectQueue[Metronome.Instance.BarCount].Peek().Timing)
-        //     {
-        //         Metronome.Instance.SetBpm(bpmObjectQueue[Metronome.Instance.BarCount].Dequeue().Bpm);
-        //     }
-        // }
+        if (currentBPMIndex < InGameManager.Instance.patternData.bpmList.Count && InGameManager.Instance.patternData.bpmList[currentBPMIndex].Timing <= elapsedMilliseconds / 1000)
+        {
+            currentBpm = InGameManager.Instance.patternData.bpmList[currentBPMIndex].Bpm;
+            Debug.Log($"현재 bpm: {currentBpm}");
+            currentBPMIndex++;
+        }
     }
 }

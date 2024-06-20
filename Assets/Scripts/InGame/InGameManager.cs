@@ -27,8 +27,8 @@ public class InGameManager : MonoBehaviour
 
         // 개발 환경인 경우에는 로컬에 있는 임의의 파일로 지정함.
         #if UNITY_EDITOR
-        BMSHeaderParser parsedHeaderData = new BMSHeaderParser("C:/bmsFiles/Aleph-0 (by LeaF)/_7INSANE.bms");
-        // BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms"));
+        // BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Merry Christmas Mr. (by sasakure.UK)/mcml(DPH_prpr).bme"));
+        BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms"));
         patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
         InGameSoundManager.Instance.LoadSounds(parsedHeaderData.TrackInfo);
         #elif UNITY_STANDALONE
@@ -42,15 +42,10 @@ public class InGameManager : MonoBehaviour
 
     private void InitializeBMSObjectHandler()
     {
-        // 스레드 분리된거 추가
-        GameObject BGMHandlerMultiThread = new GameObject("BGMHandlerMultiThread");
-        BGMHandlerMultiThread.AddComponent<BGMHandlerMultiThread>();
+        GameObject BGMHandler = new GameObject("BGMHandler");
+        BGMHandler.AddComponent<BGMHandler>();
 
-        // // BGM 제어 컴포넌트 추가
-        // GameObject BGMHandler = new GameObject("BGMHandler");
-        // BGMHandler.AddComponent<BGMHandler>();
-        // // BGM 제어 컴포넌트 추가
-        // GameObject BPMHandler = new GameObject("BPMHandler");
-        // BPMHandler.AddComponent<BPMHandler>();
+        GameObject BPMHandler = new GameObject("BPMHandler");
+        BPMHandler.AddComponent<BPMHandler>();
     }
 }

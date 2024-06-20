@@ -105,7 +105,7 @@ namespace BMS
                 }
                 if (headerKey.StartsWith("#BMP"))
                 {
-                    TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, headerValue));
+                    TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, Path.GetFileNameWithoutExtension(headerValue)));
                 }
 
                 // STOP //
