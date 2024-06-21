@@ -192,6 +192,7 @@ namespace BMS
                                 continue;
                             }
 
+                            // 변속 //
                             if (channel == "09")
                             {
                                 pattern.AddStop(currentBar, beat, beatLength, parsedToIntValue);

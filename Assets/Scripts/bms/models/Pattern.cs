@@ -119,7 +119,7 @@ namespace BMS
         {
             double sum = 0;
             int idx = 0;
-            while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx + 1].Beat)
+            while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx].Beat)
             {
                 sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240;
                 idx++;
@@ -134,13 +134,13 @@ namespace BMS
             {
                 bpm.CalculateBeat(GetPreviousBarBeatSum(bpm.Bar), GetBeatMeasureLength(bpm.Bar));
             }
-            bpmList.Sort();
 
             if (bpmList.Count == 0 || (bpmList.Count > 0 && bpmList[0].Beat != 0))
             {
-                AddFirstBPMTable(0, 0, 1, defaultBPM);
+                AddBPMTable(0, 0, 1, defaultBPM);
             }
             bpmList[0].Timing = 0;
+            bpmList.Sort();
 
             for (int i = 1; i < bpmList.Count; ++i)
             {
