@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -15,13 +14,11 @@ namespace BMS
         public delegate void ParseDataDelegate(string line);
         public ParseDataDelegate parseData;
 
-        Stack<int> randoms = new();
-        Stack<int> srandoms = new();
-        Stack<int> crandom = new();
-        Stack<bool> skip = new();
-
+        Stack<int> randomStack = new Stack<int>();
+        Stack<bool> skipStack = new Stack<bool>();
+        Stack<int> currentRandomCache = new Stack<int>();
         // 헤더에서 넘어온 랜덤 정보
-        public int[] previousRandomResult { get; private set; }
+        public int[] selectedRandom { get; private set; }
 
         public ChartDecoder(string path)
         {
@@ -39,23 +36,20 @@ namespace BMS
         {
             this.path = path;
             trackInfo.path = path;
-            previousRandomResult = random;
+            selectedRandom = random;
         }
 
         public ChartDecoder(TrackInfo trackInfo, int[] random)
         {
             path = trackInfo.path;
             this.trackInfo = trackInfo;
-            previousRandomResult = random;
+            selectedRandom = random;
         }
 
         public void ReadFile()
         {
-            randoms.Clear();
-            srandoms.Clear();
-            crandom.Clear();
-            skip.Clear();
-
+            StringBuilder parsedLine = new StringBuilder();
+            // 랜덤 전처리
             using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
             {
                 do
@@ -66,75 +60,105 @@ namespace BMS
                     {
                         continue;
                     }
-                        
+
                     if (line[0] == '#')
                     {
-                        bool randomOk = CheckRandomState(line, previousRandomResult);
-                        if (randomOk)
+                        string headerKey = line.IndexOf(" ") > -1 ? line.Substring(0, line.IndexOf(" ")) : line;
+                        string headerValue = line.IndexOf(" ") > -1 ? line.Substring(line.IndexOf(" ") + 1) : "";
+
+                        
+                        if (headerKey == "#IF")
                         {
-                            parseData(line);
+                            if (randomStack.Count == 0)
+                            {
+                                Console.WriteLine("RandomStack is empty!");
+                                continue;
+                            }
+
+                            int currentRandom = randomStack.Peek();
+                            Int32.TryParse(headerValue, out int n);
+                            skipStack.Push(currentRandom != n);
+                            continue;
                         }
-                    }
+                        if (headerKey == "#ELSE")
+                        {
+                            if (skipStack.Count == 0)
+                            {
+                                Console.WriteLine("SkipStack is empty!");
+                                continue;
+                            }
+                            bool currentSkip = skipStack.Pop();
+                            skipStack.Push(!currentSkip);
+                            continue;
+                        }
+                        if (headerKey == "ELSEIF")
+                        {
+                            if (skipStack.Count == 0)
+                            {
+                                Console.WriteLine("SkipStack is empty!");
+                                continue;
+                            }
+                            bool currentSkip = skipStack.Pop();
+                            int currentRandom = randomStack.Peek();
+                            Int32.TryParse(headerValue, out int n);
+                            skipStack.Push(currentSkip && currentRandom != n);
+                            continue;
+                        }
+                        if (headerKey == "#ENDIF")
+                        {
+                            if (skipStack.Count == 0)
+                            {
+                                Console.WriteLine("SkipStack is empty!");
+                                continue;
+                            }
+                            skipStack.Pop();
+                            continue;
+                        }
+                        if (skipStack.Count > 0 && skipStack.Peek() == true)
+                        {
+                            continue;
+                        }
+                        if (headerKey == "#RANDOM")
+                        {
+                            if (selectedRandom == null)
+                            {
+                                Int32.TryParse(headerValue, out int n);
+                                int randomResult = new System.Random().Next(1, n + 1);
+                                randomStack.Push(randomResult);
+                                currentRandomCache.Push(randomResult);
+                                continue;
+                            }
+                            else
+                            {
+                                for (int i = selectedRandom.Length - 1; i > -1; --i)
+                                {
+                                    int result = selectedRandom[i];
+                                    randomStack.Push(result);
+                                    continue;
+                                }
+                            }
+                        }
+                        if (headerKey == "#ENDRANDOM")
+                        {
+                            if (randomStack.Count == 0)
+                            {
+                                Console.WriteLine("RandomStack is empty!");
+                                continue;
+                            }
 
+                            randomStack.Pop();
+                            continue;
+                        }
+
+                        parseData(line);
+                    }
                 } while (!reader.EndOfStream);
-
-                // 이전 랜덤 결과값 저장
-                if (previousRandomResult == null)
-                {
-                    previousRandomResult = new int[srandoms.Count];
-                    var ri = srandoms.GetEnumerator();
-                    for (int i = 0; i < previousRandomResult.Length; i++)
-                    {
-                        ri.MoveNext();
-                        previousRandomResult[i] = ri.Current;
-                    }
-                }
-            }
-        }
-
-        public bool CheckRandomState(string line, int[] selectedRandom)
-        {
-            string headerKey = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(0, line.IndexOf(" ")) : line;
-            string headerValue = line.IndexOf(" ") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(" ") + 1) : "";
-
-            if (headerKey == "#RANDOM")
-            {
-                Int32.TryParse(headerValue, out int intStatementDataValue);
-                randoms.Push(intStatementDataValue);
-                if (selectedRandom != null)
-                {
-                    crandom.Push(selectedRandom[randoms.Count - 1]);
-                }
-                else
-                {
-                    crandom.Push(new System.Random().Next(1, intStatementDataValue + 1));
-                    srandoms.Push(crandom.Peek());
-                }
-            }
-            else if (headerKey == "#IF")
-            {
-                if (crandom.Any())
-                {
-                    Int32.TryParse(headerValue, out int intStatementDataValue);
-                    skip.Push(crandom.Peek() != intStatementDataValue);
-                }
-            }
-            else if (headerKey == "#ENDIF")
-            {
-                if (skip.Any())
-                {
-                    skip.Pop();
-                }
-            }
-            else if (headerKey == "#ENDRANDOM")
-            {
-                if (crandom.Any())
-                {
-                    crandom.Pop();
-                }
             }
 
-            return skip.Count == 0 || skip.Peek() == false;
+            if (selectedRandom == null)
+            {
+                selectedRandom = currentRandomCache.ToArray();
+            }
         }
 
         // Base36 //

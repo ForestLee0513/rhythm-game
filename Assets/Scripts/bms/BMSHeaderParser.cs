@@ -45,7 +45,9 @@ namespace BMS
                     Double.TryParse(headerValue, out TrackInfo.total);
                 break;
                 case "#STAGEFILE":
-                    TrackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, headerValue);
+                    string fileName = string.Concat(headerValue.Split(Path.GetInvalidPathChars()));
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                    TrackInfo.stageFile = Path.Combine(Directory.GetParent(path).FullName, fileNameWithoutExtension);
                 break;
                 case "#LNOBJ":
                     TrackInfo.lnobj = Decode36(headerValue);
@@ -61,11 +63,15 @@ namespace BMS
 
             if (headerKey.StartsWith("#WAV"))
             {
-                TrackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, Path.GetFileNameWithoutExtension(headerValue)));
+                string fileName = string.Concat(headerValue.Split(Path.GetInvalidPathChars()));
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                TrackInfo.audioFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileNameWithoutExtension));
             }
             if (headerKey.StartsWith("#BMP"))
             {
-                TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, Path.GetFileNameWithoutExtension(headerValue)));
+                string fileName = string.Concat(headerValue.Split(Path.GetInvalidPathChars()));
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileNameWithoutExtension));
             }
 
             // STOP //
@@ -75,7 +81,7 @@ namespace BMS
                 TrackInfo.stopTable.Add(Decode36(headerKey.Substring(5)), stop / 192.0);
             }
 
-                // BPM //
+            // BPM //
             if (line.StartsWith("#BPM"))
             {
                 if (line[4] == ' ')
