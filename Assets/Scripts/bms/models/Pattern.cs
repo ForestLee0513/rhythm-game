@@ -72,6 +72,11 @@ namespace BMS
         // 일반 노트
         public void AddNote(int line, int bar, double beat, double beatLength, int keySound, Note.NoteFlagState flag)
         {
+            // LNOBJ의 롱노트 시작지점 변경
+            if (flag == Note.NoteFlagState.LnEnd)
+            {
+                lines[line].NoteList[lines[line].NoteList.Count - 2].SetFlag(Note.NoteFlagState.LnStart);
+            }
             //if (lines[line].NoteList.Count >= 2 && lines[line].NoteList[lines[line].NoteList.Count - 2].Flag == Note.NoteFlagState.LnStart)
             //{
             //    lines[line].NoteList[lines[line].NoteList.Count - 1].SetFlag(Note.NoteFlagState.LnEnd);
