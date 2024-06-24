@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEngine;
 
 namespace BMS
 {
@@ -17,8 +16,6 @@ namespace BMS
         Stack<int> randomStack = new Stack<int>();
         Stack<bool> skipStack = new Stack<bool>();
         Stack<int> currentRandomCache = new Stack<int>();
-        // 헤더에서 넘어온 랜덤 정보
-        public int[] selectedRandom { get; private set; }
 
         public ChartDecoder(string path)
         {
@@ -32,24 +29,11 @@ namespace BMS
             this.trackInfo = trackInfo;
         }
 
-        public ChartDecoder(string path, int[] random)
-        {
-            this.path = path;
-            trackInfo.path = path;
-            selectedRandom = random;
-        }
-
-        public ChartDecoder(TrackInfo trackInfo, int[] random)
-        {
-            path = trackInfo.path;
-            this.trackInfo = trackInfo;
-            selectedRandom = random;
-        }
-
         public void ReadFile()
         {
             StringBuilder parsedLine = new StringBuilder();
-            // 랜덤 전처리
+            // ?? ???
+            // TODO: Random???? ?? ???? ??? ???? (??? ??? ???? ??? TrackInfo? ???.)
             using (var reader = new StreamReader(path, Encoding.GetEncoding(932)))
             {
                 do
@@ -120,7 +104,7 @@ namespace BMS
                         }
                         if (headerKey == "#RANDOM")
                         {
-                            if (selectedRandom == null)
+                            if (trackInfo.selectedRandom == null)
                             {
                                 Int32.TryParse(headerValue, out int n);
                                 int randomResult = new System.Random().Next(1, n + 1);
@@ -130,9 +114,9 @@ namespace BMS
                             }
                             else
                             {
-                                for (int i = selectedRandom.Length - 1; i > -1; --i)
+                                for (int i = trackInfo.selectedRandom.Length - 1; i > -1; --i)
                                 {
-                                    int result = selectedRandom[i];
+                                    int result = trackInfo.selectedRandom[i];
                                     randomStack.Push(result);
                                     continue;
                                 }
@@ -155,9 +139,9 @@ namespace BMS
                 } while (!reader.EndOfStream);
             }
 
-            if (selectedRandom == null)
+            if (trackInfo.selectedRandom == null)
             {
-                selectedRandom = currentRandomCache.ToArray();
+                trackInfo.selectedRandom = currentRandomCache.ToArray();
             }
         }
 

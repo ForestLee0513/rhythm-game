@@ -8,7 +8,8 @@ namespace BMS
             LnStart,
             LnEnd,
             Mine,
-            BGM
+            BGM,
+            Invisible
         }
 
         public int KeySound { get; private set; }

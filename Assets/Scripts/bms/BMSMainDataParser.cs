@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace BMS
 {
@@ -20,15 +16,6 @@ namespace BMS
         }
 
         public BMSMainDataParser(TrackInfo trackInfo): base(trackInfo)
-        {
-            parseData += ParseMainData;
-            ReadFile();
-
-            // 패턴 파싱을 다하고나서 노트 bar와 beat를 기준으로 정렬
-            pattern.CalculateBeatTimings(TrackInfo.bpm, TrackInfo.stopTable);
-        }
-
-        public BMSMainDataParser(TrackInfo trackInfo, int[] random): base(trackInfo, random)
         {
             parseData += ParseMainData;
             ReadFile();
@@ -56,7 +43,7 @@ namespace BMS
                 int lane = (channel[1] - '0') - 1;
                 // 2P (DP)인 경우 9를 더해서 2P 라인까지 index가 갈 수 있도록 수정
                 // Pattern.cs 참고
-                if (channel[0] == '2' || channel[0] == '6')
+                if (channel[0] == '2' || channel[0] == '4' || channel[0] == '6')
                 {
                     lane += 9;
                 }
@@ -95,13 +82,20 @@ namespace BMS
                                 continue;
                             }
                         }
-
-                        // 롱노트 - LNTYPE 1 명령어 일 경우의 처리
-                        if (TrackInfo.lnType == 1 && (channel[0] == '5' || channel[0] == '6'))
+                        
+                        // 투명노트 처리 (실제 판정 처리 X)
+                        if (channel[0] == '3' || channel[0] == '4')
                         {
-                            pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnStart);
+                            pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.Invisible);
                             continue;
                         }
+
+                        // // 롱노트 - LNTYPE 1 명령어 일 경우의 처리
+                        // if (TrackInfo.lnType == 1 && (channel[0] == '5' || channel[0] == '6'))
+                        // {
+                        //     pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnStart);
+                        //     continue;
+                        // }
 
                         // BGM CHANNEL //
                         if (channel == "01")

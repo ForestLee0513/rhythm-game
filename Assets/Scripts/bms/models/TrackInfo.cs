@@ -23,6 +23,7 @@ namespace BMS
         public Dictionary<int, double> stopTable = new Dictionary<int, double>();
         public int lnobj = 0;
         public int lnType = 1;
+        public int[] selectedRandom;
 
         public int CompareTo(object trackInfo)
         {
