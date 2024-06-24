@@ -119,12 +119,19 @@ namespace BMS
         {
             double sum = 0;
             int idx = 0;
-            while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx].Beat)
+            if (stopTable.Count > 1)
             {
-                sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240;
-                idx++;
+                while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx].Beat)
+                {
+                    sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240;
+                    idx++;
+                }
             }
-
+            else if (stopTable.Count == 1 && bmsObj.Beat > stopList[0].Beat)
+            {
+                sum += stopTable[stopList[0].Key] / GetBPM(stopList[0].Beat) * 240;
+            }
+            
             return sum;
         }
 
