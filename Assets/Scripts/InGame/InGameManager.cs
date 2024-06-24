@@ -9,6 +9,8 @@ public class InGameManager : MonoBehaviour
     private static InGameManager instance;
     public static InGameManager Instance { get { return instance; } }
 
+    public TrackInfo selectedTrack;
+
     public float scrollSpeed = 3.0f;
 
     private void Awake()
@@ -29,20 +31,21 @@ public class InGameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (GameManager.Instance == null)
         {
-            BMSHeaderParser parsedHeaderData = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/[Clue]Random/_random_s4.bms"));
+            selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
             // BMSHeaderParser parsedHeaderData = new BMSHeaderParser("C:/bmsFiles/[Clue]Random/_random_s4.bms");
-            patternData = new BMSMainDataParser(parsedHeaderData.TrackInfo).Pattern;
-            InGameSoundManager.Instance.LoadSounds(parsedHeaderData.TrackInfo);
+            patternData = new BMSMainDataParser(selectedTrack).Pattern;
+            InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
         else
         {
-            patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
-            InGameSoundManager.Instance.LoadSounds(GameManager.Instance.selectedTrack);
+            selectedTrack = GameManager.Instance.selectedTrack;
+            patternData = new BMSMainDataParser(selectedTrack).Pattern;
+            InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
 #elif UNITY_STANDALONE
-        patternData = new BMSMainDataParser(GameManager.Instance.selectedTrack).Pattern;
-        currentBPM = GameManager.Instance.selectedTrack.TrackInfo.bpm;
-        InGameSoundManager.Instance.LoadSounds(GameManager.instance.selectedTrack);
+        selectedTrack = GameManager.Instance.selectedTrack;
+        patternData = new BMSMainDataParser(selectedTrack).Pattern;
+        InGameSoundManager.Instance.LoadSounds(selectedTrack);
 #endif
 
         InitializeBMSObjectHandler();
