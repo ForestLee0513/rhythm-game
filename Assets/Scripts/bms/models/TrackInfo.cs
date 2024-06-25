@@ -25,6 +25,7 @@ namespace BMS
         public int lnobj = 0;
         public int lnType = 1;
         public int[] selectedRandom;
+        public string md5;
 
         public int CompareTo(object trackInfo)
         {

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using UnityEngine;
 
 namespace BMS
 {
@@ -31,6 +33,18 @@ namespace BMS
 
         public void ReadFile()
         {
+            if (trackInfo.md5 == null || trackInfo.md5 == "")
+            {
+                using (var md5 = MD5.Create())
+                {
+                    using (var stream = File.OpenRead(path))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        trackInfo.md5 = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
+                }
+            }
+
             StringBuilder parsedLine = new StringBuilder();
             // ?? ???
             // TODO: Random???? ?? ???? ??? ???? (??? ??? ???? ??? TrackInfo? ???.)
