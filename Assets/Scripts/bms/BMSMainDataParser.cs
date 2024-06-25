@@ -29,7 +29,7 @@ namespace BMS
             // 메인 데이터 파싱
             string mainDataKey = line.IndexOf(":") > -1 && line.StartsWith("#") ? line.Substring(1, line.IndexOf(":") - 1) : "";
             string mainDataValue = line.IndexOf(":") > -1 && line.StartsWith("#") ? line.Substring(line.IndexOf(":") + 1) : "";
-            if ((mainDataKey != "" && mainDataValue != ""))
+            if (mainDataKey != "" && mainDataValue != "")
             {
                 // 마디
                 Int32.TryParse(mainDataKey.Substring(0, 3), out int currentBar);
@@ -43,7 +43,7 @@ namespace BMS
                 int lane = (channel[1] - '0') - 1;
                 // 2P (DP)인 경우 9를 더해서 2P 라인까지 index가 갈 수 있도록 수정
                 // Pattern.cs 참고
-                if (channel[0] == '2' || channel[0] == '4' || channel[0] == '6')
+                if (channel[0] == '2' || channel[0] == '6')
                 {
                     lane += 9;
                 }
@@ -82,13 +82,6 @@ namespace BMS
                                 continue;
                             }
                         }
-                        
-                        // 투명노트 처리 (실제 판정 처리 X)
-                        if (channel[0] == '3' || channel[0] == '4')
-                        {
-                            pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.Invisible);
-                            continue;
-                        }
 
                         // // 롱노트 - LNTYPE 1 명령어 일 경우의 처리
                         // if (TrackInfo.lnType == 1 && (channel[0] == '5' || channel[0] == '6'))
@@ -115,6 +108,14 @@ namespace BMS
                         // BGA SEQUENCE //
                         if (channel == "04")
                         {
+                            if (TrackInfo.imageFileNames.ContainsKey(parsedToIntValue))
+                            {
+                                pattern.AddBGASequenceFrames(currentBar, beat, beatLength, parsedToIntValue, BGASequence.BGAFlagState.Image);
+                            }
+                            else if (TrackInfo.videoFileNames.ContainsKey(parsedToIntValue))
+                            {
+                                pattern.AddBGASequenceFrames(currentBar, beat, beatLength, parsedToIntValue, BGASequence.BGAFlagState.Video);
+                            }
 
                             continue;
                         }

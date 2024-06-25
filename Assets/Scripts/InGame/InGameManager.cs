@@ -32,7 +32,7 @@ public class InGameManager : MonoBehaviour
         if (GameManager.Instance == null)
         {
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
-            selectedTrack = new BMSHeaderParser("C:/bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms").TrackInfo;
+            selectedTrack = new BMSHeaderParser("C:/bmsFiles/slic_hertz/_slic_hertz_s4.bme").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
             InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
@@ -47,7 +47,10 @@ public class InGameManager : MonoBehaviour
         patternData = new BMSMainDataParser(selectedTrack).Pattern;
         InGameSoundManager.Instance.LoadSounds(selectedTrack);
 #endif
+    }
 
+    private void Start()
+    {
         InitializeBMSObjectHandler();
     }
 

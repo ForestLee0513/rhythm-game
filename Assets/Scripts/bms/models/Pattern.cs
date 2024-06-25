@@ -75,13 +75,9 @@ namespace BMS
             // LNOBJ의 롱노트 시작지점 변경
             if (flag == Note.NoteFlagState.LnEnd)
             {
-                lines[line].NoteList[lines[line].NoteList.Count - 2].SetFlag(Note.NoteFlagState.LnStart);
+                lines[line].NoteList[lines[line].NoteList.Count - 1].SetFlag(Note.NoteFlagState.LnStart);
             }
-            //if (lines[line].NoteList.Count >= 2 && lines[line].NoteList[lines[line].NoteList.Count - 2].Flag == Note.NoteFlagState.LnStart)
-            //{
-            //    lines[line].NoteList[lines[line].NoteList.Count - 1].SetFlag(Note.NoteFlagState.LnEnd);
-            //}
-            
+
             lines[line].NoteList.Add(new Note(bar, beat, beatLength, keySound, flag));
         }
 

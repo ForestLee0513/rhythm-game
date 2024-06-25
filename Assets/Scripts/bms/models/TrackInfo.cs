@@ -18,7 +18,8 @@ namespace BMS
         public int playLevel = 0;
         public int rank = 0;
         public Dictionary<int, string> audioFileNames = new Dictionary<int, string>();
-        public Dictionary<int, string> imageFileNames = new Dictionary<int, string>(); 
+        public Dictionary<int, string> imageFileNames = new Dictionary<int, string>();
+        public Dictionary<int, string> videoFileNames = new Dictionary<int, string>();
         public Dictionary<int, double> bpmTable = new Dictionary<int, double>();
         public Dictionary<int, double> stopTable = new Dictionary<int, double>();
         public int lnobj = 0;
