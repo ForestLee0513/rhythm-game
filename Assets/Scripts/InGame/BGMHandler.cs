@@ -19,15 +19,13 @@ public class BGMHandler : BMSObjectHandlerMultiThread
             currentBGMIndex++;
         }
 
-        foreach (Line line in InGameManager.Instance.patternData.lines)
+        for (int i = 0; i < InGameManager.Instance.patternData.lines.Length; ++i) 
         {
-            if (line.NoteList.Count > 0)
+            if (InGameManager.Instance.patternData.lines[i].NoteList.Count > 0 && InGameManager.Instance.patternData.lines[i].NoteList[0].Timing <= elapsedMilliseconds / 1000)
             {
-                if (line.NoteList[0].Timing <= elapsedMilliseconds / 1000)
-                {
-                    InGameSoundManager.Instance.PlaySound(line.NoteList[0].KeySound);
-                    line.NoteList.RemoveAt(0);
-                }
+                InGameSoundManager.Instance.PlaySound(InGameManager.Instance.patternData.lines[i].NoteList[0].KeySound);
+                Debug.Log($"{i}: {InGameManager.Instance.patternData.lines[i].NoteList[0].Flag} {InGameManager.Instance.patternData.lines[i].NoteList[0].KeySound}");
+                InGameManager.Instance.patternData.lines[i].NoteList.RemoveAt(0);
             }
         }
     }

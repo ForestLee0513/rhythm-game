@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using UnityEngine;
 
 namespace BMS
 {
@@ -6,6 +8,7 @@ namespace BMS
     {
         private Pattern pattern = new Pattern();
         public Pattern Pattern { get { return pattern; }}
+        private int LNBits = 0;
 
         public BMSMainDataParser(string path) : base(path)
         {
@@ -83,12 +86,21 @@ namespace BMS
                             }
                         }
 
-                        // // 롱노트 - LNTYPE 1 명령어 일 경우의 처리
-                        // if (TrackInfo.lnType == 1 && (channel[0] == '5' || channel[0] == '6'))
-                        // {
-                        //     pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnStart);
-                        //     continue;
-                        // }
+                        if (channel[0] == '5' || channel[0] == '6')
+                        {
+                            if ((LNBits & (1 << lane)) != 0)
+                            {
+                                pattern.AddNote(lane, currentBar, beat, beatLength, -1, Note.NoteFlagState.LnEnd);
+                                LNBits &= ~(1 << lane); //erase bit
+                                continue;
+                            }
+                            else
+                            {
+                                LNBits |= (1 << lane); //write bit
+                                pattern.AddNote(lane, currentBar, beat, beatLength, parsedToIntValue, Note.NoteFlagState.LnStart);
+                                continue;
+                            }
+                        }
 
                         // BGM CHANNEL //
                         if (channel == "01")

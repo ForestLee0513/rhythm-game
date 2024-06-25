@@ -49,6 +49,11 @@ public class InGameSoundManager : MonoBehaviour
 
     public void PlaySound(int channelKey)
     {
+        if (channelKey == -1)
+        {
+            return;
+        }
+
         FMOD.RESULT result = FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannel);
 
         if (result != FMOD.RESULT.OK)
