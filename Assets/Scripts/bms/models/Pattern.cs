@@ -120,7 +120,7 @@ namespace BMS
             return bpmList[idx].Bpm;
         }
 
-        private double CalculateStopTiming(BMSObject bmsObj, Dictionary<int, double> stopTable)
+        public double CalculateStopTiming(BMSObject bmsObj, Dictionary<int, double> stopTable)
         {
             double sum = 0;
             int idx = 0;

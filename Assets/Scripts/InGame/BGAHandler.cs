@@ -14,6 +14,7 @@ public class BGAHandler : BMSObjectHandlerMultiThread
     // private Dictionary<double, >
 
     private string[] imageExtensions = { ".png", ".jpg", ".bmp" };
+    private string[] videoExtensions = { ".mp4" };
 
     protected override void Start()
     {

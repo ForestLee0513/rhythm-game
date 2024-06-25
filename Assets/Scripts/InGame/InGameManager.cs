@@ -31,8 +31,8 @@ public class InGameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (GameManager.Instance == null)
         {
-            selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
-            // BMSHeaderParser parsedHeaderData = new BMSHeaderParser("C:/bmsFiles/[Clue]Random/_random_s4.bms");
+            //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
+            selectedTrack = new BMSHeaderParser("C:/bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
             InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
