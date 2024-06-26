@@ -20,7 +20,7 @@ public class InGameManager : MonoBehaviour
             instance = this;
         }
 
-        // 사운드매니저를 최초 생성
+        // 사운드매니저를 먼저 생성
         if (InGameSoundManager.Instance == null)
         {
             GameObject inGameSoundManager = new GameObject("InGameSoundManager");
@@ -32,7 +32,7 @@ public class InGameManager : MonoBehaviour
         if (GameManager.Instance == null)
         {
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
-            selectedTrack = new BMSHeaderParser("C:/bmsFiles/[Clue]Random/_random_s4.bms").TrackInfo;
+            selectedTrack = new BMSHeaderParser("C:/bmsFiles/L9 (by paraoka)/9_7l.bms").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
             InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
@@ -47,6 +47,11 @@ public class InGameManager : MonoBehaviour
         patternData = new BMSMainDataParser(selectedTrack).Pattern;
         InGameSoundManager.Instance.LoadSounds(selectedTrack);
 #endif
+
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.LoadBGAAssets(selectedTrack.imageFileNames, BGASequence.BGAFlagState.Image);
+        }
     }
 
     private void Start()
@@ -61,5 +66,8 @@ public class InGameManager : MonoBehaviour
 
         GameObject BPMHandler = new GameObject("BPMHandler");
         BPMHandler.AddComponent<BPMHandler>();
+
+        GameObject BGAHandler = new GameObject("BGAHandler");
+        BGAHandler.AddComponent<BGAHandler>();
     }
 }

@@ -70,16 +70,15 @@ namespace BMS
             if (headerKey.StartsWith("#BMP"))
             {
                 string fileName = string.Concat(headerValue.Split(Path.GetInvalidPathChars()));
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
                 string fileExtension = Path.GetExtension(headerValue).ToLower();
 
                 if (fileExtension == ".mpg" || fileExtension == ".mpeg")
                 {
-                    TrackInfo.videoFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileNameWithoutExtension));
+                    TrackInfo.videoFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileName));
                 }
                 else
                 {
-                    TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileNameWithoutExtension));
+                    TrackInfo.imageFileNames.Add(Decode36(headerKey.Substring(4)), Path.Combine(Directory.GetParent(path).FullName, fileName));
                 }
             }
 

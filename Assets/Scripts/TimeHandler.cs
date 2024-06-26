@@ -27,7 +27,7 @@ public class TimeSystem
         timeThread.Start();
     }
 
-    public void Stop()
+    public void Destroy()
     {
         if (!isRunning)
         {
@@ -36,7 +36,7 @@ public class TimeSystem
 
         isRunning = false;
         stopwatch.Stop();
-        timeThread.Join();
+        timeThread.Abort();
     }
 
     // 만들어 두긴했는데 지금 당장은 쓰지 않을거같음.. 그리고 테스트 해봐야함.

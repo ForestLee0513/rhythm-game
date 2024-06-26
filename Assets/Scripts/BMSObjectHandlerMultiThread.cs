@@ -16,7 +16,7 @@ public abstract class BMSObjectHandlerMultiThread : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        timeHandler.Stop();
+        timeHandler.Destroy();
     }
 
     protected abstract void OnTimeElapsed(double elapsedMilliseconds);
