@@ -8,6 +8,11 @@ public class BGAHandler : BMSObjectHandlerMultiThread
     private int currentBGAIndex = 0;
     private int currentLayerBGAIndex = 0;
 
+    protected override void Start()
+    {
+        base.Start();
+    }
+
     protected override void OnTimeElapsed(double elapsedMilliseconds)
     {
         if (InGameUIManager.Instance == null)

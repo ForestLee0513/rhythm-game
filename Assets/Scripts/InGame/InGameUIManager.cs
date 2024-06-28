@@ -39,6 +39,7 @@ public class InGameUIManager : MonoBehaviour
             Instance = this;
         }
     }
+
     // BPM //
     public void UpdateBPMText(double bpm)
     {
@@ -95,6 +96,11 @@ public class InGameUIManager : MonoBehaviour
         {
             baseBGAChangeJobs.Enqueue(() =>
             {
+                if (baseBGAImageFrame.gameObject.activeSelf == false)
+                {
+                    ToggleGameObject(baseBGAImageFrame);
+                }
+
                 Texture texture = bgaImages[bgaKey];
                 baseBGAImageFrame.texture = texture;
                 debugBGAText.text = $"Current BGA Key: {bgaKey}";
@@ -117,6 +123,11 @@ public class InGameUIManager : MonoBehaviour
         {
             layerBGAChangeJobs.Enqueue(() =>
             {
+                if (layerBGAImageFrame.gameObject.activeSelf == false)
+                {
+                    ToggleGameObject(layerBGAImageFrame);
+                }
+
                 Texture texture = layerBGAImages[bgaKey];
                 layerBGAImageFrame.texture = texture;
                 AspectRatioFitter layerBGAAspectRatioFitter = layerBGAImageFrame.GetComponent<AspectRatioFitter>();
@@ -129,6 +140,11 @@ public class InGameUIManager : MonoBehaviour
         {
 
         }
+    }
+
+    private void ToggleGameObject<T>(T targetGameObject) where T: MonoBehaviour
+    {
+        targetGameObject.gameObject.SetActive(!targetGameObject.gameObject.activeSelf);
     }
 
     private Texture2D ApplyChromaKey(Texture2D originalTexture, Color chromaKeyColor)
