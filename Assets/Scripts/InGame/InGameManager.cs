@@ -34,7 +34,6 @@ public class InGameManager : MonoBehaviour
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
             selectedTrack = new BMSHeaderParser("C:/bmsFiles/L9 (by paraoka)/u9.bml").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
-            InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
         else
         {
@@ -45,7 +44,6 @@ public class InGameManager : MonoBehaviour
 #elif UNITY_STANDALONE
         selectedTrack = GameManager.Instance.selectedTrack;
         patternData = new BMSMainDataParser(selectedTrack).Pattern;
-        InGameSoundManager.Instance.LoadSounds(selectedTrack);
 #endif
     }
 
