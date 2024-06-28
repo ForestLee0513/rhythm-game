@@ -117,7 +117,7 @@ namespace BMS
                             continue;
                         }
 
-                        // BGA SEQUENCE //
+                        // Base BGA SEQUENCE //
                         if (channel == "04")
                         {
                             if (TrackInfo.imageFileNames.ContainsKey(parsedToIntValue))
@@ -130,6 +130,19 @@ namespace BMS
                             }
 
                             continue;
+                        }
+
+                        // Layer BGA SEQUENCE //
+                        if (channel == "07")
+                        {
+                            if (TrackInfo.imageFileNames.ContainsKey(parsedToIntValue))
+                            {
+                                pattern.AddLayerBGASequenceFrames(currentBar, beat, beatLength, parsedToIntValue, BGASequence.BGAFlagState.Image);
+                            }
+                            else if (TrackInfo.videoFileNames.ContainsKey(parsedToIntValue))
+                            {
+                                pattern.AddLayerBGASequenceFrames(currentBar, beat, beatLength, parsedToIntValue, BGASequence.BGAFlagState.Video);
+                            }
                         }
 
                         // BPM CHANNEL 이전 BPM추가 //

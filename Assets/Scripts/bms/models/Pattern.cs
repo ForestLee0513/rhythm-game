@@ -24,6 +24,7 @@ namespace BMS
         public List<Note> bgmKeySoundChannel = new List<Note>();
         public List<Stop> stopList = new List<Stop>();
         public List<BGASequence> bgaSequenceFrameList = new List<BGASequence>();
+        public List<BGASequence> layerBGASequenceFrameList = new List<BGASequence>();
         public Line[] lines = new Line[18]; // DP(1P + 2P)대응을 위해 9 + 9 형식으로 대응. (17번은 페달이지만 미대응.)
 
         public Pattern()
@@ -46,11 +47,6 @@ namespace BMS
             bpmList.Add(new BPM(bar, beat, beatLength, bpmKey));
         }
 
-        private void AddFirstBPMTable(int bar, double beat, double beatLength, double bpmKey)
-        {
-            bpmList.Insert(0, new BPM(bar, beat, beatLength, bpmKey));
-        }
-        
         // 마디 별 BGM 사운드 추가
         public void AddBGMKeySound(int bar, double beat, double beatLength, int keySound)
         {
@@ -67,6 +63,12 @@ namespace BMS
         public void AddBGASequenceFrames(int bar, double beat,double beatLength, int bgaSequenceFrame, BGASequence.BGAFlagState flag)
         {
             bgaSequenceFrameList.Add(new BGASequence(bar, beat, beatLength, bgaSequenceFrame, flag));
+        }
+
+        // 레이어 BGA 추가
+        public void AddLayerBGASequenceFrames(int bar, double beat, double beatLength, int bgaSequenceFrame, BGASequence.BGAFlagState flag)
+        {
+            layerBGASequenceFrameList.Add(new BGASequence(bar, beat, beatLength, bgaSequenceFrame, flag));
         }
 
         // 일반 노트
@@ -168,6 +170,13 @@ namespace BMS
 
             }
             bgaSequenceFrameList.Sort();
+
+            foreach (BGASequence bgaSequence in layerBGASequenceFrameList)
+            {
+                bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
+                bgaSequence.Timing = GetTimingInSecond(bgaSequence);
+            }
+            layerBGASequenceFrameList.Sort();
 
             foreach (Note bgm in bgmKeySoundChannel)
             {

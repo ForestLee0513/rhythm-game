@@ -32,7 +32,7 @@ public class InGameManager : MonoBehaviour
         if (GameManager.Instance == null)
         {
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7ANOTHER.bms")).TrackInfo;
-            selectedTrack = new BMSHeaderParser("C:/bmsFiles/L9 (by paraoka)/9_7l.bms").TrackInfo;
+            selectedTrack = new BMSHeaderParser("C:/bmsFiles/L9 (by paraoka)/u9.bml").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
             InGameSoundManager.Instance.LoadSounds(selectedTrack);
         }
@@ -40,22 +40,23 @@ public class InGameManager : MonoBehaviour
         {
             selectedTrack = GameManager.Instance.selectedTrack;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
-            InGameSoundManager.Instance.LoadSounds(selectedTrack);
+            
         }
 #elif UNITY_STANDALONE
         selectedTrack = GameManager.Instance.selectedTrack;
         patternData = new BMSMainDataParser(selectedTrack).Pattern;
         InGameSoundManager.Instance.LoadSounds(selectedTrack);
 #endif
-
-        if (InGameUIManager.Instance != null)
-        {
-            InGameUIManager.Instance.LoadBGAAssets(selectedTrack.imageFileNames, BGASequence.BGAFlagState.Image);
-        }
     }
 
     private void Start()
     {
+        InGameSoundManager.Instance.LoadSounds(selectedTrack);
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.LoadBGAAssets(selectedTrack.imageFileNames, BGASequence.BGAFlagState.Image);
+        }
+
         InitializeBMSObjectHandler();
     }
 

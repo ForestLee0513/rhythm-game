@@ -28,7 +28,7 @@ public class BPMHandler : BMSObjectHandlerMultiThread
             if (elapsedSeconds >= adjustedTiming)
             {
                 currentBPMIndex++;
-                Debug.Log($"Incremented currentBPM to {currentBPMEvent.Bpm} due to adjusted timing.");
+                InGameUIManager.Instance.UpdateBPMText(currentBPMEvent.Bpm);
             }
         }
     }
