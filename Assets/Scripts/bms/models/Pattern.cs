@@ -100,9 +100,9 @@ namespace BMS
             int i;
             for (i = 0; i < bpmList.Count - 1 && obj.Beat > bpmList[i + 1].Beat; ++i)
             {
-                timing += (bpmList[i + 1].Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
+                timing += (bpmList[i + 1].Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60000;
             }
-            timing += (obj.Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60;
+            timing += (obj.Beat - bpmList[i].Beat) / bpmList[i].Bpm * 60000;
             return timing;
         }
 
@@ -125,13 +125,13 @@ namespace BMS
             {
                 while (idx < stopList.Count - 1 && bmsObj.Beat > stopList[idx].Beat)
                 {
-                    sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240;
+                    sum += stopTable[stopList[idx].Key] / GetBPM(stopList[idx].Beat) * 240000;
                     idx++;
                 }
             }
             else if (stopTable.Count == 1 && bmsObj.Beat > stopList[0].Beat)
             {
-                sum += stopTable[stopList[0].Key] / GetBPM(stopList[0].Beat) * 240;
+                sum += stopTable[stopList[0].Key] / GetBPM(stopList[0].Beat) * 240000;
             }
             
             return sum;
@@ -153,7 +153,7 @@ namespace BMS
 
             for (int i = 1; i < bpmList.Count; ++i)
             {
-                bpmList[i].Timing = bpmList[i - 1].Timing + (bpmList[i].Beat - bpmList[i - 1].Beat) / (bpmList[i - 1].Bpm / 60);
+                bpmList[i].Timing = bpmList[i - 1].Timing + (bpmList[i].Beat - bpmList[i - 1].Beat) / (bpmList[i - 1].Bpm / 60000);
             }
 
             foreach (Stop s in stopList)

@@ -16,7 +16,6 @@ public class BPMHandler : BMSObjectHandlerMultiThread
 
     protected override void OnTimeElapsed(double elapsedMilliseconds)
     {
-        double elapsedSeconds = elapsedMilliseconds / 1000;
         if (currentBPMIndex < InGameManager.Instance.patternData.bpmList.Count)
         {
             var currentBPMEvent = InGameManager.Instance.patternData.bpmList[currentBPMIndex];
@@ -25,7 +24,7 @@ public class BPMHandler : BMSObjectHandlerMultiThread
             var totalStopTime = InGameManager.Instance.patternData.CalculateStopTiming(currentBPMEvent, InGameManager.Instance.selectedTrack.stopTable);
             var adjustedTiming = currentTiming + totalStopTime;
 
-            if (elapsedSeconds >= adjustedTiming)
+            if (elapsedMilliseconds >= adjustedTiming)
             {
                 currentBPMIndex++;
                 InGameUIManager.Instance.UpdateBPMText(currentBPMEvent.Bpm);
