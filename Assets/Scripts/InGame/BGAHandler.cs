@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using BMS;
 using UnityEngine;
 
@@ -7,10 +8,16 @@ public class BGAHandler : BMSObjectHandlerMultiThread
 {
     private int currentBGAIndex = 0;
     private int currentLayerBGAIndex = 0;
+    private int currentVideoBGAIndex = 0;
 
     protected override void Start()
     {
         base.Start();
+    }
+
+    private void Update()
+    {
+        InGameUIManager.Instance.UpdateVideoCanvas();
     }
 
     protected override void OnTimeElapsed(double elapsedMilliseconds)
@@ -18,6 +25,15 @@ public class BGAHandler : BMSObjectHandlerMultiThread
         if (InGameUIManager.Instance == null)
         {
             return;
+        }
+
+        if (currentVideoBGAIndex < InGameManager.Instance.patternData.videoBGAList.Count && InGameManager.Instance.patternData.videoBGAList[currentVideoBGAIndex].Timing <= elapsedMilliseconds)
+        {
+            BGASequence.BGAFlagState flag = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].Flag;
+            int bgaKey = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].BgaSequenceFrame;
+
+            InGameUIManager.Instance.UpdateVideoBGA(bgaKey);
+            currentVideoBGAIndex++;
         }
 
         // Base BGA

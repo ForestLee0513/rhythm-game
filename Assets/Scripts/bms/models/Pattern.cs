@@ -24,6 +24,7 @@ namespace BMS
         public List<Note> bgmKeySoundChannel = new List<Note>();
         public List<Stop> stopList = new List<Stop>();
         public List<BGASequence> bgaSequenceFrameList = new List<BGASequence>();
+        public List<BGASequence> videoBGAList = new List<BGASequence>();
         public List<BGASequence> layerBGASequenceFrameList = new List<BGASequence>();
         public Line[] lines = new Line[18]; // DP(1P + 2P)대응을 위해 9 + 9 형식으로 대응. (17번은 페달이지만 미대응.)
 
@@ -62,7 +63,14 @@ namespace BMS
         // BGA 시퀀스 프레임 추가
         public void AddBGASequenceFrames(int bar, double beat,double beatLength, int bgaSequenceFrame, BGASequence.BGAFlagState flag)
         {
-            bgaSequenceFrameList.Add(new BGASequence(bar, beat, beatLength, bgaSequenceFrame, flag));
+            if (flag == BGASequence.BGAFlagState.Image)
+            {
+                bgaSequenceFrameList.Add(new BGASequence(bar, beat, beatLength, bgaSequenceFrame, flag));
+            }
+            else
+            {
+                videoBGAList.Add(new BGASequence(bar, beat, beatLength, bgaSequenceFrame, flag));
+            }
         }
 
         // 레이어 BGA 추가
@@ -177,6 +185,13 @@ namespace BMS
                 bgaSequence.Timing = GetTimingInSecond(bgaSequence);
             }
             layerBGASequenceFrameList.Sort();
+
+            foreach (BGASequence bgaSequence in videoBGAList)
+            {
+                bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
+                bgaSequence.Timing = GetTimingInSecond(bgaSequence);
+            }
+            videoBGAList.Sort();
 
             foreach (Note bgm in bgmKeySoundChannel)
             {
