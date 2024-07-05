@@ -25,12 +25,20 @@ public class BGAHandler : BMSObjectHandlerMultiThread
 
     private void Update()
     {
+        // 비트가 0일때는 바로 재생 (ex. Kaiden Aura)
         if (!InGameUIManager.Instance.IsVideoPlaying())
-        { 
-            InGameUIManager.Instance.PlayVideoBGA();
+        {
+            BGASequence currentBGAEvent = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex];
+            if (currentBGAEvent.Beat == 0)
+            {
+                InGameUIManager.Instance.PlayVideoBGA();
+            }
         }
 
-        InGameUIManager.Instance.UpdateVideoCanvas();
+        if (InGameUIManager.Instance.IsVideoPlaying())
+        {
+            InGameUIManager.Instance.UpdateVideoCanvas();
+        }
     }
 
     protected override void OnTimeElapsed(double elapsedMilliseconds)
@@ -44,10 +52,16 @@ public class BGAHandler : BMSObjectHandlerMultiThread
         {
             BGASequence.BGAFlagState flag = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].Flag;
             int bgaKey = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].BgaSequenceFrame;
+            BGASequence currentBGAEvent = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex];
 
             if (currentVideoBGAIndex > 0)
             {
                 InGameUIManager.Instance.UpdateVideoBGA(bgaKey);
+            }
+
+            if (!InGameUIManager.Instance.IsVideoPlaying())
+            {
+                InGameUIManager.Instance.PlayVideoBGA();
             }
 
             currentVideoBGAIndex++;

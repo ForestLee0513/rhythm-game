@@ -175,7 +175,8 @@ namespace BMS
             {
                 bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
                 bgaSequence.Timing = GetTimingInSecond(bgaSequence);
-
+                double stopTiming = CalculateStopTiming(bgaSequence, stopTable);
+                bgaSequence.Timing += stopTiming;
             }
             bgaSequenceFrameList.Sort();
 
@@ -183,6 +184,8 @@ namespace BMS
             {
                 bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
                 bgaSequence.Timing = GetTimingInSecond(bgaSequence);
+                double stopTiming = CalculateStopTiming(bgaSequence, stopTable);
+                bgaSequence.Timing += stopTiming;
             }
             layerBGASequenceFrameList.Sort();
 
@@ -190,6 +193,8 @@ namespace BMS
             {
                 bgaSequence.CalculateBeat(GetPreviousBarBeatSum(bgaSequence.Bar), GetBeatMeasureLength(bgaSequence.Bar));
                 bgaSequence.Timing = GetTimingInSecond(bgaSequence);
+                double stopTiming = CalculateStopTiming(bgaSequence, stopTable);
+                bgaSequence.Timing += stopTiming;
             }
             videoBGAList.Sort();
 

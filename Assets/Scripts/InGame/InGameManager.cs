@@ -32,7 +32,7 @@ public class InGameManager : MonoBehaviour
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/[モリモリあつし] MilK/_MilK_Aery.bms")).TrackInfo;
              //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7INSANE.bms")).TrackInfo;
              //selectedTrack = new BMSHeaderParser("C:/bmsFiles/Merry Christmas Mr. (by sasakure.UK)/mcml(4-7uet).bme").TrackInfo;
-            selectedTrack = new BMSHeaderParser("C:/bmsFiles/slic_hertz/_slic_hertz_s4.bme").TrackInfo;
+            selectedTrack = new BMSHeaderParser("C:/bmsFiles/take_003_ogg/_take_7A.bms").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
         }
         else
