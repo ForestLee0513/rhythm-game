@@ -104,6 +104,11 @@ public class InGameUIManager : MonoBehaviour
         mediaPlayer = new MediaPlayer(libVLC);
     }
 
+    public bool IsVideoPlaying()
+    {
+        return mediaPlayer.IsPlaying;
+    }
+
     void DestroyMediaPlayer()
     {
         Debug.Log("DestroyMediaPlayer");
@@ -183,8 +188,12 @@ public class InGameUIManager : MonoBehaviour
             }
 
             mediaPlayer.Media = new Media(new Uri(path));
-            mediaPlayer.Play();
         });
+    }
+
+    public void PlayVideoBGA()
+    {
+        mediaPlayer.Play();
     }
 
     public void UpdateBaseBGA(int bgaKey, BGASequence.BGAFlagState flag)
