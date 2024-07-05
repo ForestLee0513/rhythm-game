@@ -10,6 +10,8 @@ public class BGAHandler : BMSObjectHandlerMultiThread
     private int currentLayerBGAIndex = 0;
     private int currentVideoBGAIndex = 0;
 
+    private bool isVideoStarted = false;
+
     protected override void Start()
     {
         base.Start();
@@ -17,6 +19,16 @@ public class BGAHandler : BMSObjectHandlerMultiThread
 
     private void Update()
     {
+        if (!isVideoStarted && InGameManager.Instance.patternData.videoBGAList.Count > 0)
+        {
+            BGASequence.BGAFlagState flag = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].Flag;
+            int bgaKey = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].BgaSequenceFrame;
+
+            InGameUIManager.Instance.UpdateVideoBGA(bgaKey);
+            currentVideoBGAIndex++;
+            isVideoStarted = !isVideoStarted;
+        }
+
         InGameUIManager.Instance.UpdateVideoCanvas();
     }
 
