@@ -109,7 +109,6 @@ public class InGameUIManager : MonoBehaviour
         videoBGAChangeJobs.Enqueue(() =>
         {
             videoBGAPlayer.Open(videoBGAPathMap[bgaKey]);
-            videoBGAPlayer.Play();
         });
     }
 
