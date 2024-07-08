@@ -1,4 +1,5 @@
 using BMS;
+using System.IO;
 using UnityEngine;
 
 public class InGameManager : MonoBehaviour
@@ -30,9 +31,9 @@ public class InGameManager : MonoBehaviour
         if (GameManager.Instance == null)
         {
             //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/[モリモリあつし] MilK/_MilK_Aery.bms")).TrackInfo;
-            //selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/Aleph-0 (by LeaF)/_7INSANE.bms")).TrackInfo;
+            selectedTrack = new BMSHeaderParser(Path.Combine(Application.dataPath, "bmsFiles/[clover]LeaF_AliceinMisanthrope/5key aery.bms")).TrackInfo;
             //selectedTrack = new BMSHeaderParser("C:/bmsFiles/Merry Christmas Mr. (by sasakure.UK)/mcml(4-7uet).bme").TrackInfo;
-            selectedTrack = new BMSHeaderParser("C:/bmsFiles/Aleph-0 (by LeaF)/_7INSANE.bms").TrackInfo;
+            //selectedTrack = new BMSHeaderParser("C:/bmsFiles/Aleph-0 (by LeaF)/_7INSANE.bms").TrackInfo;
             patternData = new BMSMainDataParser(selectedTrack).Pattern;
         }
         else

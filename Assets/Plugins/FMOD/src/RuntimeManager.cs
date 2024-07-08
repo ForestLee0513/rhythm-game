@@ -183,7 +183,7 @@ namespace FMODUnity
                     {
                         RuntimeUtils.EnforceLibraryOrder();
 
-                        #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
                         // First, obtain the current activity context
                         AndroidJavaObject activity = null;
                         using (var activityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
@@ -202,7 +202,7 @@ namespace FMODUnity
                                 RuntimeUtils.DebugLogWarning("[FMOD] Cannot initialize Java wrapper");
                             }
                         }
-                        #endif
+#endif
 
                         initResult = instance.Initialize();
                     }
@@ -281,8 +281,8 @@ namespace FMODUnity
             currentPlatform = fmodSettings.FindCurrentPlatform();
 
             int sampleRate = currentPlatform.SampleRate;
-            int realChannels = Math.Min(currentPlatform.RealChannelCount, 256);
-            int virtualChannels = currentPlatform.VirtualChannelCount;
+            int realChannels = 512;
+            int virtualChannels = 512;
             uint dspBufferLength = (uint)currentPlatform.DSPBufferLength;
             int dspBufferCount = currentPlatform.DSPBufferCount;
             FMOD.SPEAKERMODE speakerMode = currentPlatform.SpeakerMode;

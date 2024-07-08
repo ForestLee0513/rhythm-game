@@ -1,6 +1,5 @@
 using System.IO;
 using BMS;
-using FMODUnity;
 using UnityEngine;
 
 public class InGameSoundManager : MonoBehaviour
@@ -20,7 +19,7 @@ public class InGameSoundManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-        }
+        }    
     }
 
     public void LoadSounds(TrackInfo trackInfo)
@@ -42,7 +41,7 @@ public class InGameSoundManager : MonoBehaviour
 
             string path = $"{trackInfo.audioFileNames[trackSoundKey]}{selectedExtension}";
 
-            FMODUnity.RuntimeManager.CoreSystem.createSound(path, FMOD.MODE.CREATESAMPLE, out trackSounds[trackSoundKey]);
+            FMODUnity.RuntimeManager.CoreSystem.createSound(path, FMOD.MODE.CREATESAMPLE | FMOD.MODE.ACCURATETIME, out trackSounds[trackSoundKey]);
         }
         trackSoundChannel.setChannelGroup(trackSoundChannelGroup);
     }
@@ -53,7 +52,7 @@ public class InGameSoundManager : MonoBehaviour
         {
             return;
         }
-
+        
         FMOD.RESULT result = FMODUnity.RuntimeManager.CoreSystem.playSound(trackSounds[channelKey], trackSoundChannelGroup, false, out trackSoundChannel);
 
         if (result != FMOD.RESULT.OK)
