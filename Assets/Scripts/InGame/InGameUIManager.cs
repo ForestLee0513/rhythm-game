@@ -1,13 +1,12 @@
 using B83.Image.BMP;
 using BMS;
-using LibVLCSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Device;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class InGameUIManager : MonoBehaviour
 {
@@ -18,18 +17,9 @@ public class InGameUIManager : MonoBehaviour
     public static InGameUIManager Instance { get; private set; }
 
     // 비디오 기반 BGA
-    private string[] videoExtensions = { ".mp4" };
-    public static LibVLC libVLC;
-    private MediaPlayer mediaPlayer;
-    private Dictionary<int, string> videoBGAPath = new();
+    private Dictionary<int, string> videoBGAPathMap = new();
     [SerializeField]
-    private RawImage videoBGACanvas;
-    Texture2D _vlcTexture = null; //This is the texture libVLC writes to directly. It's private.
-    public RenderTexture texture = null; //We copy it into this texture which we actually use in unity.
-    public bool flipTextureX = true;
-    public bool flipTextureY = true;
-    public bool logToConsole = false;
-    private AspectRatioFitter videoBGAAspectRatioFitter;
+    private VLCPlayerExample videoBGAPlayer;
 
     // 이미지 기반 BGA
     private Dictionary<int, Texture2D> bgaImages = new();
@@ -56,65 +46,8 @@ public class InGameUIManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            CreateLibVLC();
-            CreateMediaPlayer();
+            videoBGAPlayer = gameObject.GetComponent<VLCPlayerExample>();
         }
-    }
-
-    void CreateLibVLC()
-    {
-        Debug.Log("CreateLibVLC");
-        //Dispose of the old libVLC if necessary
-        if (libVLC != null)
-        {
-            libVLC.Dispose();
-            libVLC = null;
-        }
-
-        Core.Initialize(UnityEngine.Application.dataPath); //Load VLC dlls
-        libVLC = new LibVLC(enableDebugLogs: true); //You can customize LibVLC with advanced CLI options here https://wiki.videolan.org/VLC_command-line_help/
-
-        //Setup Error Logging
-        UnityEngine.Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-        libVLC.Log += (s, e) =>
-        {
-            //Always use try/catch in LibVLC events.
-            //LibVLC can freeze Unity if an exception goes unhandled inside an event handler.
-            try
-            {
-                if (logToConsole)
-                {
-                    Debug.Log(e.FormattedLog);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Exception caught in libVLC.Log: \n" + ex.ToString());
-            }
-        };
-    }
-
-    void CreateMediaPlayer()
-    {
-        Debug.Log(" CreateMediaPlayer");
-        if (mediaPlayer != null)
-        {
-            DestroyMediaPlayer();
-        }
-        mediaPlayer = new MediaPlayer(libVLC);
-    }
-
-    public bool IsVideoPlaying()
-    {
-        return mediaPlayer.IsPlaying;
-    }
-
-    void DestroyMediaPlayer()
-    {
-        Debug.Log("DestroyMediaPlayer");
-        mediaPlayer?.Stop();
-        mediaPlayer?.Dispose();
-        mediaPlayer = null;
     }
 
     // BPM //
@@ -149,7 +82,7 @@ public class InGameUIManager : MonoBehaviour
                 }
                 else if (fileExtension == ".jpg" || fileExtension == ".png")
                 {
-                    byte[] fileData = System.IO.File.ReadAllBytes(filePath);
+                    byte[] fileData = File.ReadAllBytes(filePath);
                     Texture2D texture = new Texture2D(1, 1);
 
                     if (texture.LoadImage(fileData))
@@ -166,34 +99,18 @@ public class InGameUIManager : MonoBehaviour
             foreach (var bgaKey in bgaMap.Keys)
             {
                 string filePath = bgaMap[bgaKey].Trim(new char[] { '"' });
-                videoBGAPath.Add(bgaKey, filePath);
+                videoBGAPathMap.Add(bgaKey, filePath);
             }
         }
     }
 
     public void UpdateVideoBGA(int bgaKey)
     {
-        string path = videoBGAPath[bgaKey].Trim(new char[] { '"' });
-
         videoBGAChangeJobs.Enqueue(() =>
         {
-            if (videoBGACanvas.gameObject.activeSelf == false)
-            {
-                videoBGACanvas.gameObject.SetActive(true);
-            }
-
-            if (mediaPlayer.Media != null)
-            {
-                mediaPlayer.Media.Dispose();
-            }
-
-            mediaPlayer.Media = new Media(new Uri(path));
+            videoBGAPlayer.Open(videoBGAPathMap[bgaKey]);
+            videoBGAPlayer.Play();
         });
-    }
-
-    public void PlayVideoBGA()
-    {
-        mediaPlayer.Play();
     }
 
     public void UpdateBaseBGA(int bgaKey, BGASequence.BGAFlagState flag)
@@ -220,7 +137,7 @@ public class InGameUIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("비디오 형식은 UpdateVideoBGA() 매서드를 사용해주세요.");
+            UnityEngine.Debug.LogError("비디오 형식은 UpdateVideoBGA() 매서드를 사용해주세요.");
         }
     }
 
@@ -244,11 +161,11 @@ public class InGameUIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("비디오는 레이어 BGA를 지원하지 않아요.");
+            UnityEngine.Debug.LogError("비디오는 레이어 BGA를 지원하지 않아요.");
         }
     }
 
-    private void ToggleGameObject<T>(T targetGameObject) where T: MonoBehaviour
+    private void ToggleGameObject<T>(T targetGameObject) where T : MonoBehaviour
     {
         targetGameObject.gameObject.SetActive(!targetGameObject.gameObject.activeSelf);
     }
@@ -290,83 +207,11 @@ public class InGameUIManager : MonoBehaviour
             videoBGAChangeJobs.Dequeue().Invoke();
     }
 
-    public void UpdateVideoCanvas()
-    {
-        if (mediaPlayer.IsPlaying == false || mediaPlayer.Media == null || mediaPlayer == null)
-        {
-            return;
-        }
-
-        if (videoBGAAspectRatioFitter == null)
-        {
-            videoBGAAspectRatioFitter = videoBGACanvas.GetComponent<AspectRatioFitter>();
-        }
-
-        uint height = 0;
-        uint width = 0;
-        mediaPlayer.Size(0, ref width, ref height);
-
-        //Automatically resize output textures if size changes
-        if (_vlcTexture == null || _vlcTexture.width != width || _vlcTexture.height != height)
-        {
-            ResizeOutputTextures(width, height);
-        }
-
-        if (_vlcTexture != null)
-        {
-            //Update the vlc texture (tex)
-            var texptr = mediaPlayer.GetTexture(width, height, out bool updated);
-            if (updated)
-            {
-                _vlcTexture.UpdateExternalTexture(texptr);
-
-                //Copy the vlc texture into the output texture, automatically flipped over
-                var flip = new Vector2(flipTextureX ? -1 : 1, flipTextureY ? -1 : 1);
-                Graphics.Blit(_vlcTexture, texture, flip, Vector2.zero); //If you wanted to do post processing outside of VLC you could use a shader here.
-                videoBGAAspectRatioFitter.aspectRatio = _vlcTexture.width / _vlcTexture.height;
-            }
-        }
-    }
-
-    void ResizeOutputTextures(uint px, uint py)
-    {
-        var texptr = mediaPlayer.GetTexture(px, py, out bool updated);
-        if (px != 0 && py != 0 && updated && texptr != IntPtr.Zero)
-        {
-            //If the currently playing video uses the Bottom Right orientation, we have to do this to avoid stretching it.
-            if (GetVideoOrientation() == VideoOrientation.BottomRight)
-            {
-                uint swap = px;
-                px = py;
-                py = swap;
-            }
-
-            _vlcTexture = Texture2D.CreateExternalTexture((int)px, (int)py, TextureFormat.RGBA32, false, true, texptr); //Make a texture of the proper size for the video to output to
-            texture = new RenderTexture(_vlcTexture.width, _vlcTexture.height, 0, RenderTextureFormat.ARGB32); //Make a renderTexture the same size as vlctex
-
-            videoBGACanvas.texture = texture;
-        }
-    }
-
-    public VideoOrientation? GetVideoOrientation()
-    {
-        var tracks = mediaPlayer?.Tracks(TrackType.Video);
-
-        if (tracks == null || tracks.Count == 0)
-            return null;
-
-        var orientation = tracks[0]?.Data.Video.Orientation; //At the moment we're assuming the track we're playing is the first track
-
-        return orientation;
-    }
-
     private void OnDestroy()
     {
         baseBGAChangeJobs.Clear();
         layerBGAChangeJobs.Clear();
         bpmChangeJobs.Clear();
         videoBGAChangeJobs.Clear();
-
-        DestroyMediaPlayer();
     }
 }

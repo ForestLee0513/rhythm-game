@@ -362,15 +362,14 @@ GameObject:
   m_Component:
   - component: {fileID: 429306730}
   - component: {fileID: 429306734}
-  - component: {fileID: 429306733}
-  - component: {fileID: 429306732}
+  - component: {fileID: 429306735}
   m_Layer: 5
   m_Name: VideoBGA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &429306730
 RectTransform:
   m_ObjectHideFlags: 0
@@ -388,23 +387,17 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -0.00012207}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &429306732
-MonoBehaviour:
+--- !u!222 &429306734
+CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 429306729}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AspectMode: 3
-  m_AspectRatio: 1.2916666
---- !u!114 &429306733
+  m_CullTransparentMesh: 1
+--- !u!114 &429306735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -431,14 +424,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!222 &429306734
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429306729}
-  m_CullTransparentMesh: 1
 --- !u!1 &630354513
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,6 +742,7 @@ GameObject:
   - component: {fileID: 1067175826}
   - component: {fileID: 1067175825}
   - component: {fileID: 1067175829}
+  - component: {fileID: 1067175830}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -861,15 +847,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa3c7ca6ba4c5842bf768998fb26286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoBGACanvas: {fileID: 429306733}
-  texture: {fileID: 0}
-  flipTextureX: 1
-  flipTextureY: 1
-  logToConsole: 0
+  videoBGAPlayer: {fileID: 0}
   baseBGACanvas: {fileID: 914659684}
   layerBGACanvas: {fileID: 201604902}
   debugBGAText: {fileID: 1151535683}
   debugBPMText: {fileID: 1681669411}
+--- !u!114 &1067175830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067175824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a54f68b0283bcfc408393ef8ebab9465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screen: {fileID: 0}
+  canvasScreen: {fileID: 429306735}
+  texture: {fileID: 0}
+  path: https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_stereo.avi
+  flipTextureX: 1
+  flipTextureY: 1
+  playOnAwake: 0
+  logToConsole: 0
 --- !u!1 &1084573352
 GameObject:
   m_ObjectHideFlags: 0
