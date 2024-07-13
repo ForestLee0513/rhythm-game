@@ -7,10 +7,10 @@ public class InGameManager : MonoBehaviour
     public Pattern patternData = null;
     private static InGameManager instance;
     public static InGameManager Instance { get { return instance; } }
-
     public TrackInfo selectedTrack;
 
-    public float scrollSpeed = 3.0f;
+    [SerializeField]
+    TimelineSubject timelineSubject;
 
     private void Awake()
     {
@@ -46,29 +46,18 @@ public class InGameManager : MonoBehaviour
         selectedTrack = GameManager.Instance.selectedTrack;
         patternData = new BMSMainDataParser(selectedTrack).Pattern;
 #endif
+
+        InGameSoundManager.Instance.LoadSounds(selectedTrack);
     }
 
     private void Start()
     {
-        InGameSoundManager.Instance.LoadSounds(selectedTrack);
         if (InGameUIManager.Instance != null)
         {
             InGameUIManager.Instance.LoadBGAAssets(selectedTrack.imageFileNames, BGASequence.BGAFlagState.Image);
             InGameUIManager.Instance.LoadBGAAssets(selectedTrack.videoFileNames, BGASequence.BGAFlagState.Video);
         }
 
-        InitializeBMSObjectHandler();
-    }
-
-    private void InitializeBMSObjectHandler()
-    {
-        GameObject BGMHandler = new GameObject("BGMHandler");
-        BGMHandler.AddComponent<BGMHandler>();
-
-        GameObject BPMHandler = new GameObject("BPMHandler");
-        BPMHandler.AddComponent<BPMHandler>();
-
-        GameObject BGAHandler = new GameObject("BGAHandler");
-        BGAHandler.AddComponent<BGAHandler>();
+        timelineSubject.StartTime();
     }
 }

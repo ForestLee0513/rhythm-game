@@ -1,7 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using BMS;
 
-public class Note : MonoBehaviour
+public class Judge : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()

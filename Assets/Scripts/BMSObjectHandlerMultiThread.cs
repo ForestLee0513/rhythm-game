@@ -30,9 +30,9 @@ public abstract class BMSObjectHandlerMultiThread : MonoBehaviour
             this.handler = handler;
         }
 
-        protected override void OnTimeElapsed()
-        {
-            handler.OnTimeElapsed(stopwatch.Elapsed.TotalMilliseconds);
-        }
+        //protected override void OnTimeElapsed()
+        //{
+        //    handler.OnTimeElapsed(stopwatch.Elapsed.TotalMilliseconds);
+        //}
     }
 }

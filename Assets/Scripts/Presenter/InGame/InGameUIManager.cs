@@ -39,8 +39,6 @@ public class InGameUIManager : MonoBehaviour
     Queue<Action> baseBGAChangeJobs = new Queue<Action>();
     Queue<Action> layerBGAChangeJobs = new Queue<Action>();
     Queue<Action> bpmChangeJobs = new Queue<Action>();
-    Queue<Action> videoBGAChangeJobs = new Queue<Action>();
-
     private void Awake()
     {
         if (Instance == null)
@@ -106,10 +104,7 @@ public class InGameUIManager : MonoBehaviour
 
     public void UpdateVideoBGA(int bgaKey)
     {
-        videoBGAChangeJobs.Enqueue(() =>
-        {
-            videoBGAPlayer.Open(videoBGAPathMap[bgaKey]);
-        });
+        videoBGAPlayer.Open(videoBGAPathMap[bgaKey]);
     }
 
     public void UpdateBaseBGA(int bgaKey, BGASequence.BGAFlagState flag)
@@ -201,9 +196,6 @@ public class InGameUIManager : MonoBehaviour
 
         while (bpmChangeJobs.Count > 0)
             bpmChangeJobs.Dequeue().Invoke();
-
-        while (videoBGAChangeJobs.Count > 0)
-            videoBGAChangeJobs.Dequeue().Invoke();
     }
 
     private void OnDestroy()
@@ -211,6 +203,5 @@ public class InGameUIManager : MonoBehaviour
         baseBGAChangeJobs.Clear();
         layerBGAChangeJobs.Clear();
         bpmChangeJobs.Clear();
-        videoBGAChangeJobs.Clear();
     }
 }

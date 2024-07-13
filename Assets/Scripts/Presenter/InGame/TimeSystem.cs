@@ -7,7 +7,9 @@ public class TimeSystem
     private Thread timeThread;
     protected Stopwatch stopwatch;
     private bool isRunning;
-    
+
+    public event Action<double> OnTimeElapsed;
+
     public TimeSystem()
     {
         stopwatch = new Stopwatch();
@@ -22,9 +24,9 @@ public class TimeSystem
         }
 
         isRunning = true;
-        stopwatch.Start();
         timeThread = new Thread(TimeLoop);
         timeThread.Start();
+        stopwatch.Start();
     }
 
     public void Destroy()
@@ -37,31 +39,14 @@ public class TimeSystem
         isRunning = false;
         stopwatch.Stop();
         timeThread.Abort();
+        OnTimeElapsed = null;
     }
-
-    // 만들어 두긴했는데 지금 당장은 쓰지 않을거같음.. 그리고 테스트 해봐야함.
-    // public void Reset()
-    // {
-    //     if (!isRunning)
-    //     {
-    //         return;
-    //     }
-
-    //     isRunning = false;
-    //     stopwatch.Stop();
-    //     timeThread.Join();
-    //     timeThread.Start();
-    // }
 
     private void TimeLoop()
     {
         while (isRunning)
         {
-            OnTimeElapsed();
+            OnTimeElapsed?.Invoke(stopwatch.Elapsed.TotalMilliseconds);
         }
-    }
-
-    protected virtual void OnTimeElapsed()
-    {
     }
 }

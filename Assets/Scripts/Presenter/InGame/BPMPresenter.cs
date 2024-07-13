@@ -1,13 +1,6 @@
-using BMS;
-using UnityEngine;
-
-
-public class BPMHandler : BMSObjectHandlerMultiThread
+public class BPMPresenter : BMSObjectObserver
 {
     private int currentBPMIndex = 0;
-    private double currentBpm = 0;
-
-    private double adjustedTiming;
 
     protected override void Start()
     {

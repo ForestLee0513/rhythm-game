@@ -1,28 +1,20 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using BMS;
 using UnityEngine;
 
-public class BGAHandler : BMSObjectHandlerMultiThread
+public class BGAPresenter : BMSObjectObserver
 {
     private int currentBGAIndex = 0;
     private int currentLayerBGAIndex = 0;
     private int currentVideoBGAIndex = 0;
 
-    protected override void Start()
-    {
-        base.Start();
-    }
-
-    protected override void OnTimeElapsed(double elapsedMilliseconds)
+    protected override void OnTimeElapsed(double elapsedTime)
     {
         if (InGameUIManager.Instance == null)
         {
             return;
         }
 
-        if (currentVideoBGAIndex < InGameManager.Instance.patternData.videoBGAList.Count && InGameManager.Instance.patternData.videoBGAList[currentVideoBGAIndex].Timing <= elapsedMilliseconds)
+        if (currentVideoBGAIndex < InGameManager.Instance.patternData.videoBGAList.Count && InGameManager.Instance.patternData.videoBGAList[currentVideoBGAIndex].Timing <= elapsedTime)
         {
             int bgaKey = InGameManager.Instance.patternData.videoBGAList[currentBGAIndex].BgaSequenceFrame;
 
@@ -31,7 +23,7 @@ public class BGAHandler : BMSObjectHandlerMultiThread
         }
 
         // Base BGA
-        if (currentBGAIndex < InGameManager.Instance.patternData.bgaSequenceFrameList.Count && InGameManager.Instance.patternData.bgaSequenceFrameList[currentBGAIndex].Timing <= elapsedMilliseconds)
+        if (currentBGAIndex < InGameManager.Instance.patternData.bgaSequenceFrameList.Count && InGameManager.Instance.patternData.bgaSequenceFrameList[currentBGAIndex].Timing <= elapsedTime)
         {
             BGASequence.BGAFlagState flag = InGameManager.Instance.patternData.bgaSequenceFrameList[currentBGAIndex].Flag;
             int bgaKey = InGameManager.Instance.patternData.bgaSequenceFrameList[currentBGAIndex].BgaSequenceFrame;
@@ -41,7 +33,7 @@ public class BGAHandler : BMSObjectHandlerMultiThread
         }
 
         // Layer BGA
-        if (currentLayerBGAIndex < InGameManager.Instance.patternData.layerBGASequenceFrameList.Count && InGameManager.Instance.patternData.layerBGASequenceFrameList[currentLayerBGAIndex].Timing <= elapsedMilliseconds)
+        if (currentLayerBGAIndex < InGameManager.Instance.patternData.layerBGASequenceFrameList.Count && InGameManager.Instance.patternData.layerBGASequenceFrameList[currentLayerBGAIndex].Timing <= elapsedTime)
         {
             BGASequence.BGAFlagState flag = InGameManager.Instance.patternData.layerBGASequenceFrameList[currentLayerBGAIndex].Flag;
             int bgaKey = InGameManager.Instance.patternData.layerBGASequenceFrameList[currentLayerBGAIndex].BgaSequenceFrame;
