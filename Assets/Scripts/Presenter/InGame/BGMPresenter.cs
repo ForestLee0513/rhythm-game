@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class BGMPresenter : BMSObjectObserver 
 {
     private int currentBGMIndex = 0;

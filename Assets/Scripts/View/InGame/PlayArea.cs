@@ -1,18 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayArea : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    PlayAreaPresenter playAreaPresenter;
+
+    [SerializeField]
+    RectTransform[] lines = new RectTransform[18];
+
+    private void Start()
     {
-        
+        playAreaPresenter.Init(lines);
+        playAreaPresenter.OnKeyPressEvent += GetInput;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        playAreaPresenter.OnKeyPressEvent -= GetInput;
+    }
+
+    private void GetInput()
+    {
     }
 }

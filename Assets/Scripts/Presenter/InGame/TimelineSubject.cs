@@ -1,9 +1,20 @@
 using System;
 using UnityEngine;
 
+public class CurrentPatternState
+{
+    public int bpm;
+    public int currentStopTime;
+    public int currentFixedScrollSpeed;
+}
+
 public class TimelineSubject : MonoBehaviour
 {
     TimeSystem timeSystem;
+
+    #region Data
+    public CurrentPatternState currentPatternRefIndex = new();
+    #endregion
 
     private void Awake()
     {
