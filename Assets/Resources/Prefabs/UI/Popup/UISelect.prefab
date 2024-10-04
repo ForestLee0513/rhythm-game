@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7382208039332312350}
   - component: {fileID: 1517369936744555743}
   - component: {fileID: 8682580272323032405}
+  - component: {fileID: 465919881788381793}
   m_Layer: 5
   m_Name: UISelect
   m_TagString: Untagged
@@ -102,6 +103,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &465919881788381793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767672537625796582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74befb49b48421c45b266ea33fb22c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5573759260130312883
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,9 +147,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7120939300457578099}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -653.25, y: 233.46}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 306.75, y: -306.53998}
   m_SizeDelta: {x: 613.0719, y: 613.0719}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1495360092885092133

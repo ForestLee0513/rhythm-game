@@ -11,6 +11,9 @@ public class Managers : MonoBehaviour
 
     public static UIManager UI { get { Init(); return _uiManager; } }
     public static ResourceManager Resource { get { Init(); return _resourceManager; } }
+    
+    // Data Managers //
+
 
     void Start()
     {
