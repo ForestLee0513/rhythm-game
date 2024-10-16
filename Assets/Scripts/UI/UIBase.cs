@@ -60,25 +60,25 @@ public class UIBase : MonoBehaviour
     protected Button GetButton(int idx) { return Get<Button>(idx); }
     protected Image GetImage(int idx) { return Get<Image>(idx); }
 
-    public static void BindEvent(GameObject go, Action action, Define.UIEvent type = Define.UIEvent.Click)
+    public static void BindEvent(GameObject go, Action action, UIDefine.UIEvent type = UIDefine.UIEvent.Click)
     {
         UIEventHandler evt = Utils.GetOrAddComponent<UIEventHandler>(go);
 
         switch (type)
         {
-            case Define.UIEvent.Click:
+            case UIDefine.UIEvent.Click:
                 evt.OnClickHandler -= action;
                 evt.OnClickHandler += action;
                 break;
-            case Define.UIEvent.Pressed:
+            case UIDefine.UIEvent.Pressed:
                 evt.OnPressedHandler -= action;
                 evt.OnPressedHandler += action;
                 break;
-            case Define.UIEvent.PointerDown:
+            case UIDefine.UIEvent.PointerDown:
                 evt.OnPointerDownHandler -= action;
                 evt.OnPointerDownHandler += action;
                 break;
-            case Define.UIEvent.PointerUp:
+            case UIDefine.UIEvent.PointerUp:
                 evt.OnPointerUpHandler -= action;
                 evt.OnPointerUpHandler += action;
                 break;

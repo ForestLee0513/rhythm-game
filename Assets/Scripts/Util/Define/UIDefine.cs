@@ -1,4 +1,4 @@
-public class Define
+public class UIDefine
 {
     public enum UIEvent
     {

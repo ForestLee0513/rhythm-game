@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BaseScene : MonoBehaviour
 {
-	public Define.Scene SceneType = Define.Scene.Unknown;
+	public UIDefine.Scene SceneType = UIDefine.Scene.Unknown;
 
 	protected bool _init = false;
 

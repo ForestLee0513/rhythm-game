@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,10 @@ public static class Extension
         return Utils.GetOrAddComponent<T>(go);
     }
 
-    //public static void BindEvent(this GameObject go, Action action, Define.UIEvent type = Define.UIEvent.Click)
-    //{
-    //    UIBase.BindEvent(go, action, type);
-    //}
+    public static void BindEvent(this GameObject go, Action action, UIDefine.UIEvent type = UIDefine.UIEvent.Click)
+    {
+        UIBase.BindEvent(go, action, type);
+    }
 
     public static void ResetVertical(this ScrollRect scrollRect)
     {
