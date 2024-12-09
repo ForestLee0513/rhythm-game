@@ -11,11 +11,12 @@ public class Managers : MonoBehaviour
 
     public static UIManager UI { get { Init(); return _uiManager; } }
     public static ResourceManager Resource { get { Init(); return _resourceManager; } }
-    
+
     // Data Managers //
+    private static SongInfoDataManager songInfoDataManager = new("songInfo");
+    public static SongInfoDataManager SongInfoDataManager { get { Init(); return songInfoDataManager; } }
 
-
-    void Start()
+    private void Start()
     {
         Init();
     }
@@ -31,5 +32,13 @@ public class Managers : MonoBehaviour
             Instance = Utils.GetOrAddComponent<Managers>(go);
             DontDestroyOnLoad(go);
         }
+    }
+
+    // Close or Dispose a some instances for safe.
+    // Actually I'm not sure this one is need. becuase while we run a game, @Managers instance will never destroy.
+    // But, I want to prevent a memory leaks on exit applions for safe. (e. g. SQLite Connection)
+    private void OnDestroy()
+    {
+        songInfoDataManager.CloseDatabase();
     }
 }

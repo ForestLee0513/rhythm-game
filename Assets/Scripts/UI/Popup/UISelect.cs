@@ -1,4 +1,5 @@
-using BMS;
+using BMSParser;
+using UnityEngine;
 
 public class UISelect : UIPopup
 {
@@ -19,16 +20,15 @@ public class UISelect : UIPopup
 
 
 
-    public override bool Init()
+    public override bool Init()     
     {
         if (base.Init() == false)
             return false;
 
-        BMSModel bmsModel = new BMSDecoder().Decode("D:\\BMSFiles\\[clover]LeaF_Aleph0\\_7ANOTHER.bms");
+        BMSModel bmsModel = new BMS().Decode("D:\\bms\\7key\\[Clue]Random\\_random_s4.bms");
 
-        UnityEngine.Debug.Log(bmsModel.Title);
-        UnityEngine.Debug.Log(bmsModel.Artist);
-
+        Debug.Log(bmsModel.Title);
+        Debug.Log(bmsModel.Artist);
 
         return true;
     }
