@@ -83,7 +83,7 @@ public abstract class SQLiteManager
         for (int i = 0; i < table.Fields.Length; i++)
         {
             string comma = (table.Fields.Length > 1) && i < table.Fields.Length - 1 || isPKExists ? "," : "";
-            sqlSb.AppendLine($"\"{table.Fields[i].Name}\" {table.Fields[i].Type} {(table.Fields[i].NotNull ? "NOT NULL" : "")} {(table.Fields[i].Unique ? "UNIQUE" : "")}{comma}");
+            sqlSb.AppendLine($"\"{table.Fields[i].Name}\" {table.Fields[i].Type}{(table.Fields[i].NotNull ? " NOT NULL" : "")}{(table.Fields[i].Unique ? " UNIQUE" : "")}{comma}");
         }
 
         // PK SQL »ı¼º

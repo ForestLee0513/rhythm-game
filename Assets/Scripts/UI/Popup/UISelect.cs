@@ -27,8 +27,8 @@ public class UISelect : UIPopup
 
         BMSModel bmsModel = new BMS().Decode("D:\\bms\\7key\\[Clue]Random\\_random_s4.bms");
 
-        Debug.Log(bmsModel.Title);
-        Debug.Log(bmsModel.Artist);
+        //Debug.Log(bmsModel.Title);
+        //Debug.Log(bmsModel.Artist);
 
         return true;
     }
