@@ -6,7 +6,7 @@ public static class SongInfo
     {
         Name = "SongInfo",
         Fields = new Field[] {
-
+  
         },
     };
 }

@@ -14,6 +14,23 @@ public class SQLiteData
         public bool PrimaryKey { get; set; }
         public bool AutoIncrement { get; set; }
         public bool Unique { get; set; }
+
+        public Field(
+            string name,
+            SQLiteDefine.Type type,
+            bool notNull,
+            bool primaryKey,
+            bool autoIncrement,
+            bool unique)
+        {
+            Name = name;
+            Type = type;
+            NotNull = notNull;
+            // AutoIncrement는 PK가 활성화 됐을 때만 처리되므로 AutoIncrement가 활성화 될때는 PK도 활성화
+            PrimaryKey = autoIncrement ? true : primaryKey;
+            AutoIncrement = autoIncrement;
+            Unique = unique;
+        }
     }
 
     public class Constraint
