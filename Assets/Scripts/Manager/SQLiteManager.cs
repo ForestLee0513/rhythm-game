@@ -1,8 +1,14 @@
 using Mono.Data.Sqlite;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Unity.VisualScripting;
+using UnityEditor.Search;
 using UnityEngine;
 using static SQLiteData;
 
@@ -10,11 +16,6 @@ public abstract class SQLiteManager
 {
     protected string connectionPath;
     protected string filePath;
-
-    protected SqliteConnection connection;
-    protected SqliteCommand command;
-    protected SqliteDataReader reader;
-
     protected SQLiteManager(string fileName)
     {
         filePath = $"{Application.persistentDataPath}/{fileName}.db";
@@ -24,7 +25,6 @@ public abstract class SQLiteManager
     public void Init()
     {
         CreateFileIfNotExists();
-        OpenDatabase();
     }
 
     public void CreateFileIfNotExists()
@@ -45,9 +45,16 @@ public abstract class SQLiteManager
 
     public void CreateTableIfNotExists(Table table)
     {
-        StringBuilder sqlSb = new();
         bool isPKExists = false;
         int autoIncrementCount = 0;
+        StringBuilder sqlSb = new();
+            
+        // 추가할 필드가 없으면 sql 추가 중단
+        if (table.Fields.Length == 0)
+        {
+            Debug.LogWarning($"{table.Name} 테이블은 필드값이 없어 생략합니다.");
+            return;
+        }
 
         // auto increment가 있는지 확인 후 2개 이상이라면 에러 처리
         foreach (Field field in table.Fields)
@@ -106,36 +113,56 @@ public abstract class SQLiteManager
         }
         sqlSb.AppendLine(pkStringBuilder.ToString());
         sqlSb.AppendLine(");");
-        Debug.Log($"{sqlSb}");
+        RunQuery(sqlSb.ToString());
     }
 
-    public void OpenDatabase()
+    // 여기 예외처리 해야하는데..
+    // UNIQUE 여부 확인
+    public void RunQuery(string query)
     {
-        connection = new SqliteConnection(connectionPath);
+        using SqliteConnection connection = new(connectionPath);
         connection.Open();
-        Debug.Log("Connected to database");
+        IDbCommand dbCommand = connection.CreateCommand();
+        dbCommand.CommandText = query;
+        IDataReader reader = dbCommand.ExecuteReader();
+
+        reader.Close();
     }
 
-    public void CloseDatabase()
+    public List<T> ReadTable<T>(string tableName) where T : new()
     {
-        if (command != null)
-        {
-            command.Dispose();
-        }
-        command = null;
+        using SqliteConnection connection = new(connectionPath);
+        connection.Open();
+        IDbCommand dbCommand = connection.CreateCommand();
+        dbCommand.CommandText = $"SELECT * FROM {tableName}";
+        IDataReader reader = dbCommand.ExecuteReader();
 
-        if (reader != null)
+        List<T> values = new();
+        while (reader.Read())
         {
-            reader.Dispose();
-        }
-        reader = null;
+            T value = new();
+            var properties = typeof(T).GetFields();
 
-        if (connection != null)
-        {
-            connection.Close();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string columnName = reader.GetName(i);
+                var field = properties.FirstOrDefault(p =>
+                    p.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+
+                if (field != null)
+                {
+                    var dbValue = reader.GetValue(i);
+                    if (dbValue != DBNull.Value)
+                    {
+                        field.SetValue(value, Convert.ChangeType(dbValue, field.FieldType));
+                    }
+                }
+            }
+
+            values.Add(value);
         }
-        connection = null;
-        
-        Debug.Log("Disconnected from database.");
+
+        reader.Close();
+        return values;
     }
 }

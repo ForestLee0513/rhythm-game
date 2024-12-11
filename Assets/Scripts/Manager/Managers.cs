@@ -33,12 +33,4 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(go);
         }
     }
-
-    // Close or Dispose a some instances for safe.
-    // Actually I'm not sure this one is need. becuase while we run a game, @Managers instance will never destroy.
-    // But, I want to prevent a memory leaks on exit applions for safe. (e. g. SQLite Connection)
-    private void OnDestroy()
-    {
-        songInfoDataManager.CloseDatabase();
-    }
 }
