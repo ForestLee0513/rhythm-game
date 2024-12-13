@@ -1,4 +1,6 @@
-public class InMainScene : BaseScene
+using UnityEngine;
+
+public class MainScene : BaseScene
 {
     protected override bool Init()
     {
@@ -6,6 +8,7 @@ public class InMainScene : BaseScene
             return false;
 
         SceneType = UIDefine.Scene.Game;
+
         Managers.UI.ShowPopupUI<UISelect>();
 
         return true;

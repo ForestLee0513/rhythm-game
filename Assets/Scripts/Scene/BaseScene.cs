@@ -21,8 +21,8 @@ public class BaseScene : MonoBehaviour
 		if (go == null)
 			Managers.Resource.Instantiate("UI/EventSystem").name = "@EventSystem";
 
-		return true;
+        return true;
 	}
 
-	public virtual void Clear() { }
+    public virtual void Clear() { }
 }

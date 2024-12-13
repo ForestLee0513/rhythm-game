@@ -21,7 +21,7 @@ public class UISelect : UIPopup
 
     List<FolderInfo.Model> folders;
 
-    public override bool Init()     
+    public override bool Init()
     {
         if (base.Init() == false)
             return false;
