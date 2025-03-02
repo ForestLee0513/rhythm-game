@@ -8,13 +8,13 @@ public class Managers : MonoBehaviour
 
     private static UIManager _uiManager = new();
     private static ResourceManager _resourceManager = new();
+    private static SongInfoDataManager _songInfoDataManager = new("songInfo");
+    private static BMSModelManager _bmsModelManager = new();
 
     public static UIManager UI { get { Init(); return _uiManager; } }
     public static ResourceManager Resource { get { Init(); return _resourceManager; } }
-
-    // Data Managers //
-    private static SongInfoDataManager songInfoDataManager = new("songInfo");
-    public static SongInfoDataManager SongInfoDataManager { get { Init(); return songInfoDataManager; } }
+    public static SongInfoDataManager SongInfoDataManager { get { Init(); return _songInfoDataManager; } }
+    public static BMSModelManager BMSModelManager { get { Init(); return _bmsModelManager; } }
 
     private void Start()
     {

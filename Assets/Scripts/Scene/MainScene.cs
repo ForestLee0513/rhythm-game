@@ -7,9 +7,7 @@ public class MainScene : BaseScene
         if (base.Init() == false)
             return false;
 
-        SceneType = UIDefine.Scene.Game;
-
-        Managers.UI.ShowPopupUI<UISelect>();
+        Managers.UI.ShowPopupUI<UIManageFolder>();
 
         return true;
     }

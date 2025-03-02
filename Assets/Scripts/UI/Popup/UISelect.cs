@@ -1,4 +1,5 @@
 using BMSParser;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,12 +35,22 @@ public class UISelect : UIPopup
             Debug.Log($"VALUE IS {item.PATH} | {item.FOLDER_NAME}");
         }
 
+
         Debug.Log("== UPDATE TABLE STARTS FROM HERE ==");
-        Managers.SongInfoDataManager.RunQuery($"INSERT INTO {FolderInfo.Table.Name} VALUES('D:\\bms\\6K U_E FULL PACK 1.13', '6K U_E FULL PACK 1.13')");
-        folders = Managers.SongInfoDataManager.ReadTable<FolderInfo.Model>(FolderInfo.Table.Name);
-        foreach (FolderInfo.Model item in folders)
+        Debug.Log($"CHECK {FolderInfo.Table.Name} IS EXISTS: {Managers.SongInfoDataManager.IsTableExists(FolderInfo.Table.Name)}");
+        
+        try
         {
-            Debug.Log($"VALUE IS {item.PATH} | {item.FOLDER_NAME}");
+            Managers.SongInfoDataManager.RunQuery($"INSERT INTO {FolderInfo.Table.Name} VALUES('D:\\bms\\6K U_E FULL PACK 1.13', '6K U_E FULL PACK 1.13')");
+            folders = Managers.SongInfoDataManager.ReadTable<FolderInfo.Model>(FolderInfo.Table.Name);
+            foreach (FolderInfo.Model item in folders)
+            {
+                Debug.Log($"VALUE IS {item.PATH} | {item.FOLDER_NAME}");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
         }
 
         return true;

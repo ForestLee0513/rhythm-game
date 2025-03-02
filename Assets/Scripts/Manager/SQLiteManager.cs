@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor.Search;
 using UnityEngine;
 using static SQLiteData;
 
@@ -123,6 +124,30 @@ public abstract class SQLiteManager
         IDataReader reader = dbCommand.ExecuteReader();
 
         reader.Close();
+    }
+
+    public bool IsTableExists(string tableName)
+    {
+        using SqliteConnection connection = new(connectionPath);
+        connection.Open();
+        var sql = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+        if (connection.State == ConnectionState.Open)
+        {
+            SqliteCommand command = new SqliteCommand(sql, connection);
+            SqliteDataReader reader = command.ExecuteReader();
+            if (reader.HasRows)
+            {
+                reader.Close();
+                return true;
+            }
+
+            reader.Close();
+            return false;
+        }
+        else
+        {
+            throw new System.ArgumentException("Data.ConnectionState must be open");
+        }
     }
 
     public List<T> ReadTable<T>(string tableName) where T : new()
