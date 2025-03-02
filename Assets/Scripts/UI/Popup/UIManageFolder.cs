@@ -2,6 +2,7 @@ using BMSParser;
 using System.Collections.Generic;
 using UnityEngine;
 using SFB;
+using UnityEditor;
 
 public class UIManageFolder : UIPopup
 {
@@ -66,7 +67,15 @@ public class UIManageFolder : UIPopup
         // DB 추가
         // UI 상으로 랜더링 처리
         // 랜더링 된 UI에 클릭 이벤트 추가
-        Debug.Log($"Selected folder is : {selectedPath}");
+        List<FolderInfo.Model> existFolderPaths = Managers.SongInfoDataManager.SearchFolderPath<FolderInfo.Model>(selectedPath);
+
+        if (existFolderPaths.Count > 0)
+        {
+            Debug.Log("경로가 이미 존재함");
+            return;
+        }
+
+        Debug.Log($"{selectedPath} 폴더 추가");
     }
 
     private void RemoveFolder()

@@ -5,7 +5,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEditor.Search;
 using UnityEngine;
 using static SQLiteData;
 
@@ -156,6 +155,43 @@ public abstract class SQLiteManager
         connection.Open();
         IDbCommand dbCommand = connection.CreateCommand();
         dbCommand.CommandText = $"SELECT * FROM {tableName}";
+        IDataReader reader = dbCommand.ExecuteReader();
+
+        List<T> values = new();
+        while (reader.Read())
+        {
+            T value = new();
+            var properties = typeof(T).GetFields();
+
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string columnName = reader.GetName(i);
+                var field = properties.FirstOrDefault(p =>
+                    p.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+
+                if (field != null)
+                {
+                    var dbValue = reader.GetValue(i);
+                    if (dbValue != DBNull.Value)
+                    {
+                        field.SetValue(value, Convert.ChangeType(dbValue, field.FieldType));
+                    }
+                }
+            }
+
+            values.Add(value);
+        }
+
+        reader.Close();
+        return values;
+    }
+
+    public List<T> FindValues<T>(string tableName, string column, string searchValue) where T : new()
+    {
+        using SqliteConnection connection = new(connectionPath);
+        connection.Open();
+        IDbCommand dbCommand = connection.CreateCommand();
+        dbCommand.CommandText = $"SELECT * FROM {tableName} WHERE {column} = \"{searchValue}\"";
         IDataReader reader = dbCommand.ExecuteReader();
 
         List<T> values = new();
