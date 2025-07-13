@@ -7,7 +7,7 @@ public class MainScene : BaseScene
         if (base.Init() == false)
             return false;
 
-        Managers.UI.ShowPopupUI<UIManageFolder>();
+        Managers.UI.ShowPopupUI<UISelect>();
 
         return true;
     }

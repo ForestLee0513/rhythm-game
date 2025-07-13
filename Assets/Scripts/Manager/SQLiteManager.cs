@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using static SQLiteData;
 
@@ -44,7 +45,7 @@ public abstract class SQLiteManager
         bool isPKExists = false;
         int autoIncrementCount = 0;
         StringBuilder sqlSb = new();
-            
+
         // 추가할 필드가 없으면 sql 추가 중단
         if (table.Fields.Length == 0)
         {
@@ -112,6 +113,65 @@ public abstract class SQLiteManager
         RunQuery(sqlSb.ToString());
     }
 
+    public async Task CreateTableIfNotExistsAsync(Table table)
+    {
+        bool isPKExists = false;
+        int autoIncrementCount = 0;
+        StringBuilder sqlSb = new();
+
+        if (table.Fields.Length == 0)
+        {
+            Debug.LogWarning($"{table.Name} 테이블은 필드값이 없어 생략합니다.");
+            return;
+        }
+
+        foreach (Field field in table.Fields)
+        {
+            if (field.AutoIncrement) autoIncrementCount++;
+            if (autoIncrementCount > 1)
+            {
+                Debug.LogError("AUTO INCREMENT는 1개 이상 적용할 수 없습니다.");
+                return;
+            }
+        }
+
+        foreach (Field field in table.Fields)
+        {
+            if (field.PrimaryKey)
+            {
+                isPKExists = true;
+                break;
+            }
+        }
+
+        sqlSb.AppendLine($"CREATE TABLE IF NOT EXISTS \"{table.Name}\" (");
+        for (int i = 0; i < table.Fields.Length; i++)
+        {
+            string comma = (table.Fields.Length > 1 && i < table.Fields.Length - 1) || isPKExists ? "," : "";
+            sqlSb.AppendLine($"\"{table.Fields[i].Name}\" {table.Fields[i].Type}{(table.Fields[i].NotNull ? " NOT NULL" : "")}{(table.Fields[i].Unique ? " UNIQUE" : "")}{comma}");
+        }
+
+        StringBuilder pkStringBuilder = new();
+        Field[] pk = table.Fields.Where(field => field.PrimaryKey).ToArray();
+        if (isPKExists)
+        {
+            pkStringBuilder.Append("PRIMARY KEY(");
+            for (int i = 0; i < pk.Length; i++)
+            {
+                string comma = pk.Length > 1 && i < pk.Length - 1 ? "," : "";
+                pkStringBuilder.Append($"\"{pk[i].Name}\"{comma}");
+                pkStringBuilder.Append($"{(pk[i].AutoIncrement ? " AUTOINCREMENT" : "")}");
+            }
+            pkStringBuilder.Append(")");
+        }
+
+        sqlSb.AppendLine(pkStringBuilder.ToString());
+        sqlSb.AppendLine(");");
+
+        await RunQueryAsync(sqlSb.ToString());
+    }
+
+
     // 여기 예외처리 해야하는데..
     // UNIQUE 여부 확인
     public void RunQuery(string query)
@@ -124,6 +184,86 @@ public abstract class SQLiteManager
 
         reader.Close();
     }
+
+    public async Task RunQueryAsync(string query)
+    {
+        await Task.Run(() =>
+        {
+            using SqliteConnection connection = new(connectionPath);
+            connection.Open();
+            IDbCommand dbCommand = connection.CreateCommand();
+            dbCommand.CommandText = query;
+            IDataReader reader = dbCommand.ExecuteReader();
+            reader.Close();
+        });
+    }
+
+    public async Task InsertAsync(string tableName, Dictionary<string, object> data)
+    {
+        await Task.Run(() =>
+        {
+            using var connection = new SqliteConnection(connectionPath);
+            connection.Open();
+            using var command = connection.CreateCommand();
+
+            var columns = string.Join(", ", data.Keys.Select(k => $"\"{k}\""));
+            var values = string.Join(", ", data.Keys.Select(k => $"@{k}"));
+
+            command.CommandText = $"INSERT INTO \"{tableName}\" ({columns}) VALUES ({values});";
+
+            foreach (var kvp in data)
+            {
+                command.Parameters.AddWithValue($"@{kvp.Key}", kvp.Value);
+            }
+
+            command.ExecuteNonQuery();
+        });
+    }
+
+    public async Task UpdateAsync(string tableName, Dictionary<string, object> data, string whereClause, Dictionary<string, object> whereParams)
+    {
+        await Task.Run(() =>
+        {
+            using var connection = new SqliteConnection(connectionPath);
+            connection.Open();
+            using var command = connection.CreateCommand();
+
+            var setClause = string.Join(", ", data.Keys.Select(k => $"\"{k}\" = @{k}"));
+            command.CommandText = $"UPDATE \"{tableName}\" SET {setClause} WHERE {whereClause};";
+
+            foreach (var kvp in data)
+            {
+                command.Parameters.AddWithValue($"@{kvp.Key}", kvp.Value);
+            }
+
+            foreach (var kvp in whereParams)
+            {
+                command.Parameters.AddWithValue($"@{kvp.Key}", kvp.Value);
+            }
+
+            command.ExecuteNonQuery();
+        });
+    }
+
+    public async Task DeleteAsync(string tableName, string whereClause, Dictionary<string, object> whereParams)
+    {
+        await Task.Run(() =>
+        {
+            using var connection = new SqliteConnection(connectionPath);
+            connection.Open();
+            using var command = connection.CreateCommand();
+
+            command.CommandText = $"DELETE FROM \"{tableName}\" WHERE {whereClause};";
+
+            foreach (var kvp in whereParams)
+            {
+                command.Parameters.AddWithValue($"@{kvp.Key}", kvp.Value);
+            }
+
+            command.ExecuteNonQuery();
+        });
+    }
+
 
     public bool IsTableExists(string tableName)
     {

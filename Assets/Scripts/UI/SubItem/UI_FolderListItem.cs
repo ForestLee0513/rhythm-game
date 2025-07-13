@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class UI_FolderListItem : UIBase
 {
-
     enum Texts
     {
         FolderName,
