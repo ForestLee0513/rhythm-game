@@ -13,7 +13,7 @@ public class UISelect : UIPopup
 
     enum Buttons
     {
-
+        ManageFolerButton
     }
 
     enum Images
@@ -48,8 +48,12 @@ public class UISelect : UIPopup
             Debug.Log($"VALUE IS {item.PATH} | {item.FOLDER_NAME}");
         }
 
+        // init folders
         RefreshSongList();
         GetSongs();
+
+        // bind events
+        BindEvent(GetButton((int)Buttons.ManageFolerButton).gameObject, OpenFolderManager, UIDefine.UIEvent.Click);
 
         return true;
     }
@@ -69,5 +73,11 @@ public class UISelect : UIPopup
     private void GetSongs()
     {
         
+    }
+
+
+    private void OpenFolderManager()
+    {
+        Managers.UI.ShowPopupUI<UIManageFolder>();
     }
 }
