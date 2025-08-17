@@ -32,4 +32,21 @@ public class SongInfoDataManager : SQLiteManager
             return false;
         }
     }
+
+    public bool PushSongInfo(string folderPath)
+    {
+        string folderName = new DirectoryInfo(folderPath).Name;
+
+        try
+        {
+            
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            return false;
+        }
+    }
 }
